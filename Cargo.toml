@@ -1,6 +1,6 @@
 [package]
 name = "oxi-rmw"
-version = "0.1.0"
+version = "0.0.1"
 authors = ["andy5995 <andy400-dev@yahoo.com>"]
 edition = "2018"
 
