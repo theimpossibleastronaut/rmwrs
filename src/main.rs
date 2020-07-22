@@ -1,7 +1,8 @@
-use std::option::Option;
+// use std::option::Option;
 // use std::fs::rename;
+use std::fs;
+use std::path::{Path, PathBuf};
 use structopt::StructOpt;
-use std::path::PathBuf;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "example", about = "An example of StructOpt usage.")]
@@ -13,24 +14,12 @@ struct Opt {
 
     /// Set speed
     // we don't want to name it "speed", need to look smart
-    #[structopt(short = "v", long = "velocity", default_value = "42")]
-    speed: f64,
+    #[structopt(short = "v", long = "version")]
+    version: bool,
 
-    /// Input file
-    #[structopt(parse(from_os_str))]
-    input: PathBuf,
-
-    /// Output file, stdout if not present
-    #[structopt(parse(from_os_str))]
-    output: Option<PathBuf>,
-
-    /// Where to write the output: to `stdout` or `file`
-    #[structopt(short)]
-    out_type: String,
-
-    /// File name: only required when `out` is set to `file`
-    #[structopt(name = "FILE", required_if("out_type", "file"))]
-    file_name: Option<String>,
+    /// Files to process
+    #[structopt(name = "FILE", parse(from_os_str))]
+    files: Vec<PathBuf>,
 }
 
 fn main() {
@@ -40,7 +29,11 @@ fn main() {
     discouraged. Instead, prefer to use pattern matching and handle the
     None case explicitly, or call unwrap_or, unwrap_or_else, or
     unwrap_or_default. */
-    let homedir: String = dirs::home_dir().unwrap_or_default().to_str().unwrap().into();
+    let homedir: String = dirs::home_dir()
+        .unwrap_or_default()
+        .to_str()
+        .unwrap()
+        .into();
 
     println!("Your home directory: {:?}", homedir);
 
@@ -49,14 +42,25 @@ fn main() {
 
     let opt = Opt::from_args();
     println!("{:?}", opt);
+    if opt.version {
+        println!(
+            "{} version: {}",
+            env!("CARGO_PKG_NAME"),
+            env!("CARGO_PKG_VERSION")
+        );
+        println!();
+    }
 
-    // test code for processing cli args
-    /* let content = std::fs::read_to_string(&args.path)
-    .expect("could not read file");
+    let header = "[TrashInfo]";
 
-    for line in content.lines() {
-        if line.contains(&args.pattern) {
-            println!("{}", line);
-        }
-    } */
+    for i in &opt.files {
+        let file = Path::new(&i);
+        let contents = format!(
+            "{}\nPath={}\n",
+            header,
+            file.canonicalize().unwrap().display()
+        );
+        let trashinfo_filename = format!("{}{}", i.display(), ".trashinfo");
+        fs::write(trashinfo_filename, contents).expect("Error writing to file");
+    }
 }
