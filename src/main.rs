@@ -2,6 +2,7 @@
 // use std::fs::rename;
 use std::ffi::{OsStr, OsString};
 // use std::fmt::Display;
+use chrono::Local;
 use std::fs;
 use std::path::{Path, PathBuf};
 use structopt::StructOpt;
@@ -58,13 +59,16 @@ fn main() {
     }
 
     let header = "[TrashInfo]";
+    let date_now = Local::now();
+    let deletion_date = date_now.format("%Y-%m-%dT%H:%M:%S");
 
     for i in &opt.files {
         let file = Path::new(&i);
         let contents = format!(
-            "{}\nPath={}\n",
+            "{}\nPath={}\nDeletionDate={}\n",
             header,
-            file.canonicalize().unwrap().display()
+            file.canonicalize().unwrap().display(),
+            deletion_date
         );
         let basename = get_basename(&i).to_str().unwrap();
         let trashinfo_filename = format!("{}{}", basename, ".trashinfo");
