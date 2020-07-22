@@ -7,7 +7,7 @@ issue](https://github.com/theimpossibleastronaut/oxi-rmw/issues).
 
 ## Coding Standards
 
-4 space indenting.
+[Rust Code Style Guidelines](https://doc.rust-lang.org/book/appendix-04-useful-development-tools.html?highlight=formatting#automatic-formatting-with-rustfmt)
 
 ## Patches and Pull Requests
 
@@ -24,8 +24,8 @@ You can use [The GitHub
 flow](https://guides.github.com/introduction/flow/), which mostly just
 involves creating a separate branch for each patch you're working on.
 Using that method helps prevent merge conflicts later. *Note* that you
-should never need to work on the master branch or merge your patches
-into the master branch (See "syncing" below).
+should never need to work on the trunk (main) branch or merge your patches
+into the trunk branch (See "syncing" below).
 
 Source code patches should only contain changes related to a single
 issue. This helps speed up the review and discussion process. However,
@@ -47,4 +47,4 @@ GitHub has instructions for doing this
 * [Configuring a remote for a fork](https://help.github.com/articles/configuring-a-remote-for-a-fork/)
   * For step 3 on that page, use https://github.com/theimpossibleastronaut.com/oxi-rmw.git for the URL.
 * [Syncing a Fork](https://help.github.com/articles/syncing-a-fork/)
-  * On that page, it shows how to merge the **master** branch (steps 4 & 5).
+  * On that page, it shows how to merge the **trunk** branch (steps 4 & 5).
