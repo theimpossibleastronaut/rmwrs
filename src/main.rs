@@ -1,5 +1,7 @@
 // use std::option::Option;
 // use std::fs::rename;
+use std::ffi::{OsStr, OsString};
+// use std::fmt::Display;
 use std::fs;
 use std::path::{Path, PathBuf};
 use structopt::StructOpt;
@@ -20,6 +22,10 @@ struct Opt {
     /// Files to process
     #[structopt(name = "FILE", parse(from_os_str))]
     files: Vec<PathBuf>,
+}
+
+fn get_basename(path: &Path) -> &OsStr {
+    path.file_name().unwrap_or_else(|| path.as_os_str())
 }
 
 fn main() {
@@ -60,7 +66,8 @@ fn main() {
             header,
             file.canonicalize().unwrap().display()
         );
-        let trashinfo_filename = format!("{}{}", i.display(), ".trashinfo");
+        let basename = get_basename(&i).to_str().unwrap();
+        let trashinfo_filename = format!("{}{}", basename, ".trashinfo");
         fs::write(trashinfo_filename, contents).expect("Error writing to file");
     }
 }
