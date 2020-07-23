@@ -92,7 +92,7 @@ fn main() {
 
         // BUG: This doesn't work unless the files are in the current directory
         // (e.g. 'cargo run -- foo bar` will work, but not 'cargo run -- tmp/foo tmp/bar'
-        let destination = format!("{}/{}", &waste_files, i.display());
+        let destination = format!("{}/{}", &waste_files, basename);
         rename(i, &destination).expect("Error renaming file");
     }
 }
