@@ -17,7 +17,7 @@ struct Opt {
 
     /// Set speed
     // we don't want to name it "speed", need to look smart
-    #[structopt(short = "v", long = "version")]
+    #[structopt(short = "V", long = "version")]
     version: bool,
 
     /// Files to process
