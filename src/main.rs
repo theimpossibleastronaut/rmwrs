@@ -6,6 +6,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use structopt::StructOpt;
 mod libgen;
+mod trashinfo;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "example", about = "An example of StructOpt usage.")]
@@ -15,8 +16,7 @@ struct Opt {
     #[structopt(short, long)]
     debug: bool,
 
-    /// Set speed
-    // we don't want to name it "speed", need to look smart
+    /// Show version
     #[structopt(short = "V", long = "version")]
     version: bool,
 
@@ -38,13 +38,13 @@ fn main() {
         .unwrap()
         .into();
 
-    println!("Your home directory: {:?}", homedir);
-
-    // test code for renaming files
-    // rename("temp", "temp_foo");
-
     let opt = Opt::from_args();
-    println!("{:?}", opt);
+
+    if opt.debug {
+        println!("Your home directory: {:?}", homedir);
+        println!("{:?}", opt);
+    }
+
     if opt.version {
         println!(
             "{} version: {}",
@@ -68,31 +68,21 @@ fn main() {
         fs::create_dir_all(&waste_files).expect("Could not create directory");
     }
 
-    let header = "[TrashInfo]";
     let date_now = Local::now();
-    let deletion_date = date_now.format("%Y-%m-%dT%H:%M:%S");
+    let deletion_date = date_now.format("%Y-%m-%dT%H:%M:%S").to_string();
 
     // The format of the trashinfo file corresponds to that of the FreeDesktop.org
     // Trash specification<https://specifications.freedesktop.org/trash-spec/trashspec-latest.html>.
-    for i in &opt.files {
-        let file = Path::new(&i);
-        let contents = format!(
-            "{}\nPath={}\nDeletionDate={}\n",
-            header,
-            file.canonicalize().unwrap().display(),
-            deletion_date
-        );
-        let basename = libgen::get_basename(&i).to_str().unwrap();
-        let trashinfo_filename = format!("{}{}", basename, ".trashinfo");
-        let trashinfo_dest = format!("{}/{}", &waste_info, trashinfo_filename);
-        fs::write(trashinfo_dest, contents).expect("Error writing to file");
+    for file in &opt.files {
+        let basename = libgen::get_basename(&file).to_str().unwrap();
+        let file_absolute = file.canonicalize().unwrap().display().to_string();
 
         // Will need more error-checking to prevent overwriting existing destination files.
         // As in the C version of rmw, some type of time/date string is appended in that case.
-
-        // BUG: This doesn't work unless the files are in the current directory
-        // (e.g. 'cargo run -- foo bar` will work, but not 'cargo run -- tmp/foo tmp/bar'
         let destination = format!("{}/{}", &waste_files, basename);
-        rename(i, &destination).expect("Error renaming file");
+        rename(file, &destination).expect("Error renaming file");
+
+        let contents = trashinfo::create_contents(&file_absolute, &deletion_date);
+        trashinfo::create(&basename, &waste_info, contents).expect("Error writing trashinfo file");
     }
 }
