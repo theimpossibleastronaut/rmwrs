@@ -26,7 +26,7 @@ For example:
 Example 2:
 
     mkdir tmp
-    touch foo bar
+    touch tmp/foo tmp/bar
     cargo run -- tmp/*
 
 You'll see that the files were removed to ~/.oxi-rmw-Trash-test/files
