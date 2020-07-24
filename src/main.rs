@@ -39,13 +39,13 @@ fn main() {
         .unwrap()
         .into();
 
-    println!("Your home directory: {:?}", homedir);
-
-    // test code for renaming files
-    // rename("temp", "temp_foo");
-
     let opt = Opt::from_args();
-    println!("{:?}", opt);
+
+    if opt.debug {
+        println!("Your home directory: {:?}", homedir);
+        println!("{:?}", opt);
+    }
+
     if opt.version {
         println!(
             "{} version: {}",
