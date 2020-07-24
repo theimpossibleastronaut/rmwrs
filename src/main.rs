@@ -75,12 +75,14 @@ fn main() {
     // Trash specification<https://specifications.freedesktop.org/trash-spec/trashspec-latest.html>.
     for file in &opt.files {
         let basename = libgen::get_basename(&file).to_str().unwrap();
-        let contents = trashinfo::create_contents(file, &deletion_date);
-        trashinfo::create(&basename, &waste_info, contents).expect("Error writing trashinfo file");
 
         // Will need more error-checking to prevent overwriting existing destination files.
         // As in the C version of rmw, some type of time/date string is appended in that case.
         let destination = format!("{}/{}", &waste_files, basename);
         rename(file, &destination).expect("Error renaming file");
+
+        let file_absolute = file.canonicalize().unwrap().display().to_string();
+        let contents = trashinfo::create_contents(&file_absolute, &deletion_date);
+        trashinfo::create(&basename, &waste_info, contents).expect("Error writing trashinfo file");
     }
 }

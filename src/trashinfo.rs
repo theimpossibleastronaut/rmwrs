@@ -1,26 +1,18 @@
 use std::fs;
 use std::io;
-use std::path::Path;
 
-pub fn create_contents(f: &Path, dd: &String) -> String {
+pub fn create_contents(f: &str, dd: &String) -> String {
     let header = "[TrashInfo]";
-    format!(
-        "{}\nPath={}\nDeletionDate={}\n",
-        header,
-        f.canonicalize().unwrap().display(),
-        dd
-    )
+    format!("{}\nPath={}\nDeletionDate={}\n", header, f, dd)
 }
 
 #[test]
-#[ignore]
-// Ignore the test for now. It always fails because the file isn't found when Path:new() is run
 fn check_create_trashinfo_contents() {
-    let deletion_date = format!("{}", "2020-07-23T20:56:03");
-    let file = Path::new(r"/home/foo/bar");
+    let deletion_date = format!("{}", "2020-07-23T20:56:03".to_string());
+    let file: &str = "/home/foo/bar";
     assert_eq!(
         create_contents(&file, &deletion_date.to_string()),
-        "[TrashInfo]\nPath=/home/andy/testing\nDeletionDate=2020-07-23T20:56:03"
+        "[TrashInfo]\nPath=/home/foo/bar\nDeletionDate=2020-07-23T20:56:03\n"
     );
 }
 
