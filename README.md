@@ -31,7 +31,7 @@ Example 2:
 
 You'll see that the files were removed to ~/.oxi-rmw-Trash-test/files
 and corresponding .trashinfo files were created in
-~/.oxi-rmw-Trash-test/files. The .trashinfo file uses the
+~/.oxi-rmw-Trash-test/info. The .trashinfo file uses the
 [FreeDesktop.org Trash specification](https://specifications.freedesktop.org/trash-spec/trashspec-latest.html).
 
 To learn more about the design goals for this program, see the
