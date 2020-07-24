@@ -74,14 +74,10 @@ fn main() {
 
     // The format of the trashinfo file corresponds to that of the FreeDesktop.org
     // Trash specification<https://specifications.freedesktop.org/trash-spec/trashspec-latest.html>.
-    for i in &opt.files {
-        let file = Path::new(&i);
+    for file in &opt.files {
+        let basename = libgen::get_basename(&file).to_str().unwrap();
         let contents = trashinfo::create_contents(file, &deletion_date.to_string());
-
-        let basename = libgen::get_basename(&i).to_str().unwrap();
-        let trashinfo_filename = format!("{}{}", basename, ".trashinfo");
-        let trashinfo_dest = format!("{}/{}", &waste_info, trashinfo_filename);
-        fs::write(trashinfo_dest, contents).expect("Error writing to file");
+        trashinfo::create(&basename, &waste_info, contents).expect("Error writing trashinfo file");
 
         // Will need more error-checking to prevent overwriting existing destination files.
         // As in the C version of rmw, some type of time/date string is appended in that case.
@@ -89,6 +85,6 @@ fn main() {
         // BUG: This doesn't work unless the files are in the current directory
         // (e.g. 'cargo run -- foo bar` will work, but not 'cargo run -- tmp/foo tmp/bar'
         let destination = format!("{}/{}", &waste_files, basename);
-        rename(i, &destination).expect("Error renaming file");
+        rename(file, &destination).expect("Error renaming file");
     }
 }
