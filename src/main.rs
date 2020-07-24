@@ -6,6 +6,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use structopt::StructOpt;
 mod libgen;
+mod trashinfo;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "example", about = "An example of StructOpt usage.")]
@@ -68,7 +69,6 @@ fn main() {
         fs::create_dir_all(&waste_files).expect("Could not create directory");
     }
 
-    let header = "[TrashInfo]";
     let date_now = Local::now();
     let deletion_date = date_now.format("%Y-%m-%dT%H:%M:%S");
 
@@ -76,12 +76,8 @@ fn main() {
     // Trash specification<https://specifications.freedesktop.org/trash-spec/trashspec-latest.html>.
     for i in &opt.files {
         let file = Path::new(&i);
-        let contents = format!(
-            "{}\nPath={}\nDeletionDate={}\n",
-            header,
-            file.canonicalize().unwrap().display(),
-            deletion_date
-        );
+        let contents = trashinfo::create_trashinfo_contents(file, &deletion_date.to_string());
+
         let basename = libgen::get_basename(&i).to_str().unwrap();
         let trashinfo_filename = format!("{}{}", basename, ".trashinfo");
         let trashinfo_dest = format!("{}/{}", &waste_info, trashinfo_filename);
