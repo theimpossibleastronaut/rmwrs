@@ -81,9 +81,6 @@ fn main() {
 
         // Will need more error-checking to prevent overwriting existing destination files.
         // As in the C version of rmw, some type of time/date string is appended in that case.
-
-        // BUG: This doesn't work unless the files are in the current directory
-        // (e.g. 'cargo run -- foo bar` will work, but not 'cargo run -- tmp/foo tmp/bar'
         let destination = format!("{}/{}", &waste_files, basename);
         rename(file, &destination).expect("Error renaming file");
     }
