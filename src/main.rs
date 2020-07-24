@@ -16,8 +16,7 @@ struct Opt {
     #[structopt(short, long)]
     debug: bool,
 
-    /// Set speed
-    // we don't want to name it "speed", need to look smart
+    /// Show version
     #[structopt(short = "V", long = "version")]
     version: bool,
 
