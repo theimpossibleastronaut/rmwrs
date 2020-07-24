@@ -76,7 +76,7 @@ fn main() {
     // Trash specification<https://specifications.freedesktop.org/trash-spec/trashspec-latest.html>.
     for i in &opt.files {
         let file = Path::new(&i);
-        let contents = trashinfo::create_trashinfo_contents(file, &deletion_date.to_string());
+        let contents = trashinfo::create_contents(file, &deletion_date.to_string());
 
         let basename = libgen::get_basename(&i).to_str().unwrap();
         let trashinfo_filename = format!("{}{}", basename, ".trashinfo");
