@@ -70,13 +70,13 @@ fn main() {
     }
 
     let date_now = Local::now();
-    let deletion_date = date_now.format("%Y-%m-%dT%H:%M:%S");
+    let deletion_date = date_now.format("%Y-%m-%dT%H:%M:%S").to_string();
 
     // The format of the trashinfo file corresponds to that of the FreeDesktop.org
     // Trash specification<https://specifications.freedesktop.org/trash-spec/trashspec-latest.html>.
     for file in &opt.files {
         let basename = libgen::get_basename(&file).to_str().unwrap();
-        let contents = trashinfo::create_contents(file, &deletion_date.to_string());
+        let contents = trashinfo::create_contents(file, &deletion_date);
         trashinfo::create(&basename, &waste_info, contents).expect("Error writing trashinfo file");
 
         // Will need more error-checking to prevent overwriting existing destination files.
