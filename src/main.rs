@@ -5,6 +5,7 @@ use chrono::Local;
 use std::fs;
 use std::path::{Path, PathBuf};
 use structopt::StructOpt;
+use toml::Value;
 mod libgen;
 mod trashinfo;
 
@@ -53,6 +54,11 @@ fn main() {
         );
         println!();
     }
+
+    let config_contents = fs::read_to_string("./config_test.toml").unwrap();
+    let value = config_contents.parse::<Value>().unwrap();
+    println!("{:?}", value);
+    println!("{}", config_contents);
 
     let waste_info = format!("{}/{}", homedir, ".oxi-rmw-Trash-test/info");
     println!("Using {}", &waste_info);
