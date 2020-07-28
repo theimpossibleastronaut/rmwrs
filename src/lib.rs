@@ -51,19 +51,17 @@ pub mod configster {
     fn parse_line(l: &str, attr_delimit_char: char) -> (String, String, Vec<String>) {
         let line = l.trim();
         if line.is_empty() || line.as_bytes()[0] == b'#' {
-            return ("".to_string(), "".to_string(), Vec::new());
+            return ("".to_string(), "".to_string(), vec![]);
         }
 
-        let option;
-        let mut value = String::new();
         let mut i = line.find('=');
-        match i.is_some() {
-            true => {
-                option = format!("{}", &line[..i.unwrap()].trim());
-                value = format!("{}", &line[i.unwrap() + 1..].trim())
-            }
-            false => option = line.to_string(),
-        }
+        let (option, value) = match i.is_some() {
+            true => (
+                format!("{}", &line[..i.unwrap()].trim()),
+                format!("{}", &line[i.unwrap() + 1..].trim()),
+            ),
+            false => (line.to_string(), String::new()),
+        };
 
         i = value.find(attr_delimit_char);
         let primary_value;
