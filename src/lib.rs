@@ -8,7 +8,7 @@ pub mod configster {
     #[derive(Debug)]
     pub struct Value {
         pub primary: String,
-        attributes: Vec<String>,
+        pub attributes: Vec<String>,
     }
 
     #[derive(Debug)]
@@ -17,7 +17,9 @@ pub mod configster {
         pub value: Value,
     }
 
-    pub fn parse_file(filename: &str) -> Vec<Items> {
+    /// Parses a configuration file. The second parameter sets the delimiter for the
+    /// attribute list of the primary value.
+    pub fn parse_file(filename: &str, attr_delimit_char: char) -> Vec<Items> {
         // Open the file in read-only mode (ignoring errors).
         let file = File::open(filename).unwrap();
         let reader = BufReader::new(file);
@@ -25,7 +27,7 @@ pub mod configster {
 
         for (index, line) in reader.lines().enumerate() {
             let l = line.unwrap();
-            let (option, primary_value, attr_vec) = parse_line(&l);
+            let (option, primary_value, attr_vec) = parse_line(&l, attr_delimit_char);
             if option.is_empty() {
                 continue;
             }
@@ -46,45 +48,72 @@ pub mod configster {
         return vec;
     }
 
-    fn parse_line(l: &str) -> (String, String, Vec<String>) {
+    fn parse_line(l: &str, attr_delimit_char: char) -> (String, String, Vec<String>) {
         let line = l.trim();
         if line.is_empty() || line.as_bytes()[0] == b'#' {
             return ("".to_string(), "".to_string(), Vec::new());
         }
 
         let mut option = String::new();
-        let mut primary_value = String::new();
-        let i = line.find('=');
+        let mut value = String::new();
+        let mut i = line.find('=');
         match i.is_some() {
             true => {
                 option = format!("{}", &line[..i.unwrap()].trim());
-                primary_value = format!("{}", &line[i.unwrap() + 1..].trim())
+                value = format!("{}", &line[i.unwrap() + 1..].trim())
             }
             false => option = line.to_string(),
         }
 
-        (option, primary_value, Vec::new())
+        i = value.find(attr_delimit_char);
+        let mut primary_value = String::new();
+        let mut tmp_attr_vec: Vec<&str> = Vec::new();
+        let mut attributes = String::new();
+        match i.is_some() {
+            true => {
+                primary_value = format!("{}", &value[..i.unwrap()].trim());
+                attributes = format!("{}", &value[i.unwrap()..]);
+                tmp_attr_vec = attributes.split(attr_delimit_char).collect();
+            }
+            false => primary_value = format!("{}", value.to_string()),
+        }
+
+        let mut attr_vec: Vec<String> = Vec::new();
+        for a in &tmp_attr_vec {
+            attr_vec.push(a.trim().to_string());
+        }
+
+        (option, primary_value, attr_vec)
     }
 
     #[test]
     fn test_parse_line() {
         assert_eq!(
-            parse_line("WASTE = /home/foo"),
+            parse_line("WASTE = /home/foo", ','),
             ("WASTE".to_string(), "/home/foo".to_string(), Vec::new())
         );
 
         assert_eq!(
-            parse_line("WASTE=/home/foo"),
+            parse_line("WASTE=/home/foo", ','),
             ("WASTE".to_string(), "/home/foo".to_string(), Vec::new())
         );
 
         assert_eq!(
-            parse_line("#WASTE = /home/foo"),
-            ("".to_string(), "".to_string(), Vec::new())
+            parse_line("#WASTE = /home/foo", ','),
+            ("".to_string(), "".to_string(), vec![])
         );
 
         assert_eq!(
-            parse_line("        "),
+            parse_line("WASTE = /home/foo, removable, test", ','),
+            (
+                "WASTE".to_string(),
+                "/home/foo".to_string(),
+                vec!["".to_string(), "removable".to_string(), "test".to_string()]
+            )
+        );
+
+        assert_eq!(
+            parse_line("        ", ','),
             ("".to_string(), "".to_string(), Vec::new())
         );
     }
@@ -96,7 +125,7 @@ pub mod configster {
         // file. An option can have no value (e.g., DefaultOptionOff), but if there is
         // something after it, it requires an '=' sign.
         assert_eq!(
-            parse_line("WASTE  /home/foo"),
+            parse_line("WASTE  /home/foo", '='),
             ("".to_string(), "".to_string(), Vec::new())
         );
     }
