@@ -72,7 +72,7 @@ pub mod configster {
         match i.is_some() {
             true => {
                 primary_value = format!("{}", &value[..i.unwrap()].trim());
-                attributes = format!("{}", &value[i.unwrap()..]);
+                attributes = format!("{}", &value[i.unwrap() + 1..]);
                 tmp_attr_vec = attributes.split(attr_delimit_char).collect();
             }
             false => primary_value = format!("{}", value.to_string()),
@@ -108,7 +108,7 @@ pub mod configster {
             (
                 "WASTE".to_string(),
                 "/home/foo".to_string(),
-                vec!["".to_string(), "removable".to_string(), "test".to_string()]
+                vec!["removable".to_string(), "test".to_string()]
             )
         );
 
