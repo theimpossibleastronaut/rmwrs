@@ -86,21 +86,35 @@ pub mod configster {
 
     #[test]
     fn test_parse_line() {
+        // Test with no attributes
         assert_eq!(
             parse_line("WASTE = /home/foo", ','),
-            ("WASTE".to_string(), "/home/foo".to_string(), Vec::new())
+            ("WASTE".to_string(), "/home/foo".to_string(), vec![])
         );
 
+        // Test with 5 attributes and several spaces
         assert_eq!(
-            parse_line("WASTE=/home/foo", ','),
-            ("WASTE".to_string(), "/home/foo".to_string(), Vec::new())
+            parse_line("WASTE=/home/foo , another  ,   test,1,2,3", ','),
+            (
+                "WASTE".to_string(),
+                "/home/foo".to_string(),
+                vec![
+                    "another".to_string(),
+                    "test".to_string(),
+                    "1".to_string(),
+                    "2".to_string(),
+                    "3".to_string()
+                ]
+            )
         );
 
+        // Test with leading '#' sign
         assert_eq!(
             parse_line("#WASTE = /home/foo", ','),
             ("".to_string(), "".to_string(), vec![])
         );
 
+        // Test with two attributes, a single space after the commas
         assert_eq!(
             parse_line("WASTE = /home/foo, removable, test", ','),
             (
@@ -110,9 +124,10 @@ pub mod configster {
             )
         );
 
+        // Test for blank line
         assert_eq!(
             parse_line("        ", ','),
-            ("".to_string(), "".to_string(), Vec::new())
+            ("".to_string(), "".to_string(), vec![])
         );
     }
 
@@ -124,7 +139,7 @@ pub mod configster {
         // something after it, it requires an '=' sign.
         assert_eq!(
             parse_line("WASTE  /home/foo", '='),
-            ("".to_string(), "".to_string(), Vec::new())
+            ("".to_string(), "".to_string(), vec![])
         );
     }
 }
