@@ -4,3 +4,4 @@ dist: bionic
 script:
   - cargo check --verbose
   - cargo test
+  - cargo run
