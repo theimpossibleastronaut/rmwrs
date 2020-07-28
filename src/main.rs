@@ -56,7 +56,7 @@ fn main() {
 
     let config_vec = oxi_rmw::configster::parse_file("./config_test.conf");
     for i in &config_vec {
-        println!("Key:'{}' | value '{}'", i.key, i.value.primary);
+        println!("Option:'{}' | value '{}'", i.option, i.value.primary);
     }
 
     let waste_info = format!("{}/{}", homedir, ".oxi-rmw-Trash-test/info");

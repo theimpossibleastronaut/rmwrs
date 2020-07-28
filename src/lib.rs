@@ -13,7 +13,7 @@ pub mod configster {
 
     #[derive(Debug)]
     pub struct Items {
-        pub key: String,
+        pub option: String,
         pub value: Value,
     }
 
@@ -25,13 +25,13 @@ pub mod configster {
 
         for (index, line) in reader.lines().enumerate() {
             let l = line.unwrap();
-            let (key, primary_value, attr_vec) = parse_line(&l);
-            if key.is_empty() {
+            let (option, primary_value, attr_vec) = parse_line(&l);
+            if option.is_empty() {
                 continue;
             }
 
             let item = Items {
-                key: key,
+                option: option,
                 value: Value {
                     primary: primary_value,
                     attributes: attr_vec,
@@ -52,18 +52,18 @@ pub mod configster {
             return ("".to_string(), "".to_string(), Vec::new());
         }
 
-        let mut key = String::new();
+        let mut option = String::new();
         let mut primary_value = String::new();
         let i = line.find('=');
         match i.is_some() {
             true => {
-                key = format!("{}", &line[..i.unwrap()].trim());
+                option = format!("{}", &line[..i.unwrap()].trim());
                 primary_value = format!("{}", &line[i.unwrap() + 1..].trim())
             }
-            false => key = line.to_string(),
+            false => option = line.to_string(),
         }
 
-        (key, primary_value, Vec::new())
+        (option, primary_value, Vec::new())
     }
 
     #[test]
@@ -93,7 +93,7 @@ pub mod configster {
     #[ignore]
     fn test_parse_line_FIX_ME() {
         // A case like this needs to be handled. It's an invalid line in the config
-        // file. A key can have no value (e.g., DefaultOptionOff), but if there is
+        // file. An option can have no value (e.g., DefaultOptionOff), but if there is
         // something after it, it requires an '=' sign.
         assert_eq!(
             parse_line("WASTE  /home/foo"),
