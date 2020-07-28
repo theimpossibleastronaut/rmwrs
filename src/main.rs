@@ -2,7 +2,6 @@
 use std::fs::rename;
 // use std::fmt::Display;
 use chrono::Local;
-use json_minimal::*;
 use std::fs;
 use std::path::{Path, PathBuf};
 use structopt::StructOpt;
@@ -55,15 +54,10 @@ fn main() {
         println!();
     }
 
-    let config_contents = String::from(
-        fs::read_to_string("./config_test.json")
-            .unwrap()
-            .trim()
-            .to_string(),
-    );
-    let json = Json::parse(config_contents.as_bytes());
-    print!("{}", config_contents);
-    println!("{:?}", json);
+    let config_vec = oxi_rmw::configster::parse_file();
+    for i in &config_vec {
+        println!("{:?}", i);
+    }
 
     let waste_info = format!("{}/{}", homedir, ".oxi-rmw-Trash-test/info");
     println!("Using {}", &waste_info);
