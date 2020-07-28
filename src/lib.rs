@@ -54,7 +54,7 @@ pub mod configster {
             return ("".to_string(), "".to_string(), Vec::new());
         }
 
-        let mut option = String::new();
+        let option;
         let mut value = String::new();
         let mut i = line.find('=');
         match i.is_some() {
@@ -66,9 +66,9 @@ pub mod configster {
         }
 
         i = value.find(attr_delimit_char);
-        let mut primary_value = String::new();
+        let primary_value;
         let mut tmp_attr_vec: Vec<&str> = Vec::new();
-        let mut attributes = String::new();
+        let attributes;
         match i.is_some() {
             true => {
                 primary_value = format!("{}", &value[..i.unwrap()].trim());
