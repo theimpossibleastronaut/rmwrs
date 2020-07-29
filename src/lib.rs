@@ -12,12 +12,12 @@ pub mod configster {
     }
 
     #[derive(Debug)]
-    pub struct Items {
+    pub struct OptionProperties {
         pub option: String,
         pub value: Value,
     }
 
-    impl Items {
+    impl OptionProperties {
         fn new(option: String, primary: String, attributes: Vec<String>) -> Self {
             Self {
                 option,
@@ -31,21 +31,24 @@ pub mod configster {
 
     /// Parses a configuration file. The second parameter sets the delimiter for the
     /// attribute list of the primary value.
-    pub fn parse_file(filename: &str, attr_delimit_char: char) -> Vec<Items> {
+    pub fn parse_file(filename: &str, attr_delimit_char: char) -> Vec<OptionProperties> {
         // Open the file in read-only mode (ignoring errors).
         let file = File::open(filename).unwrap();
         let reader = BufReader::new(file);
-        let mut vec: Vec<Items> = Vec::new();
+        let mut vec: Vec<OptionProperties> = Vec::new();
 
         for (index, line) in reader.lines().enumerate() {
             let l = line.unwrap();
+
+            // Parse the line, return the properties
             let (option, primary_value, attr_vec) = parse_line(&l, attr_delimit_char);
+
             if option.is_empty() {
                 continue;
             }
 
-            let item = Items::new(option, primary_value, attr_vec);
-            vec.push(item);
+            let opt_props = OptionProperties::new(option, primary_value, attr_vec);
+            vec.push(opt_props);
 
             // Show the line and its number.
             println!("{}. {}", index + 1, l);
@@ -53,6 +56,8 @@ pub mod configster {
         return vec;
     }
 
+    /// Returns the properties of the option, derived from
+    /// a line in the configuration file.
     fn parse_line(l: &str, attr_delimit_char: char) -> (String, String, Vec<String>) {
         let line = l.trim();
         if line.is_empty() || line.as_bytes()[0] == b'#' {
