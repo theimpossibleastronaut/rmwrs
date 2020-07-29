@@ -3,6 +3,7 @@ pub mod libgen;
 pub mod configster {
 
     use std::fs::File;
+    use std::io;
     use std::io::{BufRead, BufReader};
 
     #[derive(Debug)]
@@ -31,17 +32,23 @@ pub mod configster {
 
     /// Parses a configuration file. The second parameter sets the delimiter for the
     /// attribute list of the primary value.
-    pub fn parse_file(filename: &str, attr_delimit_char: char) -> Vec<OptionProperties> {
-        // Open the file in read-only mode (ignoring errors).
-        let file = File::open(filename).unwrap();
-        let reader = BufReader::new(file);
+    pub fn parse_file(
+        filename: &str,
+        attr_delimit_char: char,
+    ) -> io::Result<Vec<OptionProperties>> {
+        let file = File::open(filename);
+        if file.is_err() {
+            return io::Result::Err(file.unwrap_err());
+        }
+
+        let reader = BufReader::new(file.unwrap());
         let mut vec: Vec<OptionProperties> = Vec::new();
 
         for (index, line) in reader.lines().enumerate() {
             let l = line.unwrap();
 
             // Parse the line, return the properties
-            let (option, primary_value, attr_vec) = parse_line(&l, attr_delimit_char);
+            let (option, primary_value, attr_vec) = parse_line(&l, attr_delimit_char).unwrap();
 
             if option.is_empty() {
                 continue;
@@ -53,15 +60,15 @@ pub mod configster {
             // Show the line and its number.
             println!("{}. {}", index + 1, l);
         }
-        return vec;
+        Ok(vec)
     }
 
     /// Returns the properties of the option, derived from
     /// a line in the configuration file.
-    fn parse_line(l: &str, attr_delimit_char: char) -> (String, String, Vec<String>) {
+    fn parse_line(l: &str, attr_delimit_char: char) -> io::Result<(String, String, Vec<String>)> {
         let line = l.trim();
         if line.is_empty() || line.as_bytes()[0] == b'#' {
-            return ("".to_string(), "".to_string(), vec![]);
+            return Ok(("".to_string(), "".to_string(), vec![]));
         }
 
         let mut i = line.find('=');
@@ -91,22 +98,22 @@ pub mod configster {
             attr_vec.push(a.trim().to_string());
         }
 
-        (option, primary_value, attr_vec)
+        Ok((option, primary_value, attr_vec))
     }
 
     #[test]
     fn test_parse_line() {
         // Test with no attributes
         assert_eq!(
-            parse_line("WASTE = /home/foo", ','),
-            ("WASTE".to_string(), "/home/foo".to_string(), vec![])
+            parse_line("Option = /home/foo", ',').unwrap(),
+            ("Option".to_string(), "/home/foo".to_string(), vec![])
         );
 
         // Test with 5 attributes and several spaces
         assert_eq!(
-            parse_line("WASTE=/home/foo , another  ,   test,1,2,3", ','),
+            parse_line("Option=/home/foo , another  ,   test,1,2,3", ',').unwrap(),
             (
-                "WASTE".to_string(),
+                "Option".to_string(),
                 "/home/foo".to_string(),
                 vec![
                     "another".to_string(),
@@ -120,15 +127,15 @@ pub mod configster {
 
         // Test with leading '#' sign
         assert_eq!(
-            parse_line("#WASTE = /home/foo", ','),
+            parse_line("#Option = /home/foo", ',').unwrap(),
             ("".to_string(), "".to_string(), vec![])
         );
 
         // Test with two attributes, a single space after the commas
         assert_eq!(
-            parse_line("WASTE = /home/foo, removable, test", ','),
+            parse_line("Option = /home/foo, removable, test", ',').unwrap(),
             (
-                "WASTE".to_string(),
+                "Option".to_string(),
                 "/home/foo".to_string(),
                 vec!["removable".to_string(), "test".to_string()]
             )
@@ -136,7 +143,7 @@ pub mod configster {
 
         // Test for blank line
         assert_eq!(
-            parse_line("        ", ','),
+            parse_line("        ", ',').unwrap(),
             ("".to_string(), "".to_string(), vec![])
         );
     }
@@ -148,7 +155,7 @@ pub mod configster {
         // file. An option can have no value (e.g., DefaultOptionOff), but if there is
         // something after it, it requires an '=' sign.
         assert_eq!(
-            parse_line("WASTE  /home/foo", '='),
+            parse_line("WASTE  /home/foo", '=').unwrap(),
             ("".to_string(), "".to_string(), vec![])
         );
     }

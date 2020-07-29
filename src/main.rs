@@ -3,6 +3,7 @@ use std::fs::rename;
 // use std::fmt::Display;
 use chrono::Local;
 use std::fs;
+use std::io;
 use std::path::{Path, PathBuf};
 use structopt::StructOpt;
 mod libgen;
@@ -25,7 +26,7 @@ struct Opt {
     files: Vec<PathBuf>,
 }
 
-fn main() {
+fn main() -> Result<(), io::Error> {
     // https://github.com/openethereum/openethereum/pull/9077/files
     // https://doc.rust-lang.org/std/option/enum.Option.html#variant.Some
     /* "Because unwrap() may panic, its use is generally
@@ -55,7 +56,11 @@ fn main() {
     }
 
     let config_vec = oxi_rmw::configster::parse_file("./config_test.conf", ',');
-    for i in &config_vec {
+    if config_vec.is_err() {
+        return io::Result::Err(config_vec.unwrap_err());
+    }
+
+    for i in &config_vec.unwrap() {
         println!("Option:'{}' | value '{}'", i.option, i.value.primary);
 
         for j in &i.value.attributes {
@@ -95,4 +100,5 @@ fn main() {
         let contents = trashinfo::create_contents(&file_absolute, &deletion_date);
         trashinfo::create(&basename, &waste_info, contents).expect("Error writing trashinfo file");
     }
+    Ok(())
 }
