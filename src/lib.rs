@@ -17,6 +17,18 @@ pub mod configster {
         pub value: Value,
     }
 
+    impl Items {
+        fn new(option: String, primary: String, attributes: Vec<String>) -> Self {
+            Self {
+                option,
+                value: Value {
+                    primary,
+                    attributes,
+                },
+            }
+        }
+    }
+
     /// Parses a configuration file. The second parameter sets the delimiter for the
     /// attribute list of the primary value.
     pub fn parse_file(filename: &str, attr_delimit_char: char) -> Vec<Items> {
@@ -32,14 +44,7 @@ pub mod configster {
                 continue;
             }
 
-            let item = Items {
-                option: option,
-                value: Value {
-                    primary: primary_value,
-                    attributes: attr_vec,
-                },
-            };
-
+            let item = Items::new(option, primary_value, attr_vec);
             vec.push(item);
 
             // Show the line and its number.
