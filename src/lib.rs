@@ -72,13 +72,22 @@ pub mod configster {
         }
 
         let mut i = line.find('=');
-        let (option, value) = match i.is_some() {
+        let (mut option, value) = match i.is_some() {
             true => (
                 format!("{}", &line[..i.unwrap()].trim()),
                 format!("{}", &line[i.unwrap() + 1..].trim()),
             ),
             false => (line.to_string(), String::new()),
         };
+
+        // An Equal sign is required after 'Option'; spaces within 'Option' is invalid.
+        let o = &option;
+        for c in o.chars() {
+            if c.is_whitespace() {
+                option = "InvalidOption".to_string();
+                return Ok((option, "".to_string(), vec![]));
+            }
+        }
 
         i = value.find(attr_delimit_char);
         let primary_value;
@@ -146,17 +155,17 @@ pub mod configster {
             parse_line("        ", ',').unwrap(),
             ("".to_string(), "".to_string(), vec![])
         );
-    }
 
-    #[test]
-    #[ignore]
-    fn test_parse_line_FIX_ME() {
-        // A case like this needs to be handled. It's an invalid line in the config
-        // file. An option can have no value (e.g., DefaultOptionOff), but if there is
-        // something after it, it requires an '=' sign.
+        // Test for whitespace in Option
         assert_eq!(
-            parse_line("WASTE  /home/foo", '=').unwrap(),
-            ("".to_string(), "".to_string(), vec![])
+            parse_line("Option  /home/foo", ',').unwrap(),
+            ("InvalidOption".to_string(), "".to_string(), vec![])
+        );
+
+        // Test for '=' after Option has already been marked as invalid.
+        assert_eq!(
+            parse_line("Option  /home/foo = value", ',').unwrap(),
+            ("InvalidOption".to_string(), "".to_string(), vec![])
         );
     }
 }
