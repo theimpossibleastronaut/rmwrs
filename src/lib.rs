@@ -112,6 +112,10 @@ pub mod configster {
         let mut vec: Vec<OptionProperties> = Vec::new();
 
         for (index, line) in reader.lines().enumerate() {
+            if line.is_err() {
+                return io::Result::Err(line.unwrap_err());
+            }
+
             let l = line.unwrap();
 
             // Parse the line, return the properties
