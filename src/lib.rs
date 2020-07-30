@@ -48,7 +48,7 @@ pub mod configster {
             let l = line.unwrap();
 
             // Parse the line, return the properties
-            let (option, primary_value, attr_vec) = parse_line(&l, attr_delimit_char).unwrap();
+            let (option, primary_value, attr_vec) = parse_line(&l, attr_delimit_char);
 
             if option.is_empty() {
                 continue;
@@ -65,10 +65,10 @@ pub mod configster {
 
     /// Returns the properties of the option, derived from
     /// a line in the configuration file.
-    fn parse_line(l: &str, attr_delimit_char: char) -> io::Result<(String, String, Vec<String>)> {
+    fn parse_line(l: &str, attr_delimit_char: char) -> (String, String, Vec<String>) {
         let line = l.trim();
         if line.is_empty() || line.as_bytes()[0] == b'#' {
-            return Ok(("".to_string(), "".to_string(), vec![]));
+            return ("".to_string(), "".to_string(), vec![]);
         }
 
         let mut i = line.find('=');
@@ -85,7 +85,7 @@ pub mod configster {
         for c in o.chars() {
             if c.is_whitespace() {
                 option = "InvalidOption".to_string();
-                return Ok((option, "".to_string(), vec![]));
+                return (option, "".to_string(), vec![]);
             }
         }
 
@@ -107,20 +107,20 @@ pub mod configster {
             attr_vec.push(a.trim().to_string());
         }
 
-        Ok((option, primary_value, attr_vec))
+        (option, primary_value, attr_vec)
     }
 
     #[test]
     fn test_parse_line() {
         // Test with no attributes
         assert_eq!(
-            parse_line("Option = /home/foo", ',').unwrap(),
+            parse_line("Option = /home/foo", ','),
             ("Option".to_string(), "/home/foo".to_string(), vec![])
         );
 
         // Test with 5 attributes and several spaces
         assert_eq!(
-            parse_line("Option=/home/foo , another  ,   test,1,2,3", ',').unwrap(),
+            parse_line("Option=/home/foo , another  ,   test,1,2,3", ','),
             (
                 "Option".to_string(),
                 "/home/foo".to_string(),
@@ -136,13 +136,13 @@ pub mod configster {
 
         // Test with leading '#' sign
         assert_eq!(
-            parse_line("#Option = /home/foo", ',').unwrap(),
+            parse_line("#Option = /home/foo", ','),
             ("".to_string(), "".to_string(), vec![])
         );
 
         // Test with two attributes, a single space after the commas
         assert_eq!(
-            parse_line("Option = /home/foo, removable, test", ',').unwrap(),
+            parse_line("Option = /home/foo, removable, test", ','),
             (
                 "Option".to_string(),
                 "/home/foo".to_string(),
@@ -152,19 +152,19 @@ pub mod configster {
 
         // Test for blank line
         assert_eq!(
-            parse_line("        ", ',').unwrap(),
+            parse_line("        ", ','),
             ("".to_string(), "".to_string(), vec![])
         );
 
         // Test for whitespace in Option
         assert_eq!(
-            parse_line("Option  /home/foo", ',').unwrap(),
+            parse_line("Option  /home/foo", ','),
             ("InvalidOption".to_string(), "".to_string(), vec![])
         );
 
         // Test for '=' after Option has already been marked as invalid.
         assert_eq!(
-            parse_line("Option  /home/foo = value", ',').unwrap(),
+            parse_line("Option  /home/foo = value", ','),
             ("InvalidOption".to_string(), "".to_string(), vec![])
         );
     }
