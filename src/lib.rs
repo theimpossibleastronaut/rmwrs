@@ -95,6 +95,7 @@ pub mod configster {
     ///    println!();
     /// }
     /// ```
+    #[inline]
     pub fn parse_file(
         filename: &str,
         attr_delimit_char: char,
