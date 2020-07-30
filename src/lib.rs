@@ -50,8 +50,6 @@ pub mod configster {
         }
     }
 
-    // This documentation is intended for the external library and may not necessarily
-    // apply to this program
     /// Parses a configuration file. The second parameter sets the delimiter for the
     /// attribute list of the primary value. The return value is a vector wrapped in
     /// an io::Result type.
@@ -78,21 +76,26 @@ pub mod configster {
     ///
     /// Accessing the Parsed Data:
     ///
-    /// ```text
-    /// use configster;
+    /// ```
+    /// use oxi_rmw::configster::parse_file;
+    /// use std::io;
     ///
-    /// let config_vec = configster::parse_file("./config.conf", ',');
-    /// if config_vec.is_err() {
-    ///     return io::Result::Err(config_vec.unwrap_err());
+    /// fn main() -> Result<(), io::Error> {
+    ///
+    ///     let config_vec = parse_file("./config_test.conf", ',');
+    ///     if config_vec.is_err() {
+    ///         return io::Result::Err(config_vec.unwrap_err());
     ///     }
     ///
-    /// for i in &config_vec.unwrap() {
-    ///    println!("Option:'{}' | value '{}'", i.option, i.value.primary);
+    ///     for i in &config_vec.unwrap() {
+    ///         println!("Option:'{}' | value '{}'", i.option, i.value.primary);
     ///
-    ///    for j in &i.value.attributes {
-    ///        println!("attr:'{}`", j);
-    ///    }
-    ///    println!();
+    ///         for j in &i.value.attributes {
+    ///             println!("attr:'{}`", j);
+    ///         }
+    ///         println!();
+    ///     }
+    ///     Ok(())
     /// }
     /// ```
     #[inline]
