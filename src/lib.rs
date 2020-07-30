@@ -111,7 +111,8 @@ pub mod configster {
         let reader = BufReader::new(file.unwrap());
         let mut vec: Vec<OptionProperties> = Vec::new();
 
-        for (index, line) in reader.lines().enumerate() {
+        // for (line, index) in reader.lines().enumerate() {
+        for line in reader.lines() {
             if line.is_err() {
                 return io::Result::Err(line.unwrap_err());
             }
@@ -129,7 +130,7 @@ pub mod configster {
             vec.push(opt_props);
 
             // Show the line and its number.
-            println!("{}. {}", index + 1, l);
+            // println!("{}. {}", index + 1, l);
         }
         Ok(vec)
     }
