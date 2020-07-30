@@ -50,8 +50,51 @@ pub mod configster {
         }
     }
 
+    // This documentation is intended for the external library and may not necessarily
+    // apply to this program
     /// Parses a configuration file. The second parameter sets the delimiter for the
-    /// attribute list of the primary value.
+    /// attribute list of the primary value. The return value is a vector wrapped in
+    /// an io::Result type.
+    ///
+    /// # Examples
+    ///
+    /// Config file format:
+    ///
+    /// ```
+    /// ExampleOption = 12
+    ///
+    /// ExampleOption2 = /home/foo/bar, optional, attribute, list, for, value
+    ///
+    /// example_option3 = Hello
+    ///
+    /// # Option = commented_out_using_hashtag
+    /// ```
+    ///
+    /// Options Without Values:
+    ///
+    /// ```
+    /// DefaultFeatureFooDisabled
+    /// ```
+    ///
+    /// Accessing the Parsed Data:
+    ///
+    /// ```
+    /// use configster;
+    ///
+    /// let config_vec = configster::parse_file("./config.conf", ',');
+    /// if config_vec.is_err() {
+    ///     return io::Result::Err(config_vec.unwrap_err());
+    ///     }
+    ///
+    /// for i in &config_vec.unwrap() {
+    ///    println!("Option:'{}' | value '{}'", i.option, i.value.primary);
+    ///
+    ///    for j in &i.value.attributes {
+    ///        println!("attr:'{}`", j);
+    ///    }
+    ///    println!();
+    /// }
+    /// ```
     pub fn parse_file(
         filename: &str,
         attr_delimit_char: char,
