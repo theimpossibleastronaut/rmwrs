@@ -4,4 +4,5 @@ dist: bionic
 script:
   - cargo check --verbose
   - cargo test
-  - cargo run
+  - touch foo bar
+  - cargo run -- foo bar
