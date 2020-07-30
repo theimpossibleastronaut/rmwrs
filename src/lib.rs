@@ -56,11 +56,11 @@ pub mod configster {
     /// attribute list of the primary value. The return value is a vector wrapped in
     /// an io::Result type.
     ///
-    /// # Examples
+    /// ## Examples
     ///
     /// Config file format:
     ///
-    /// ```
+    /// ```text
     /// ExampleOption = 12
     ///
     /// ExampleOption2 = /home/foo/bar, optional, attribute, list, for, value
@@ -72,13 +72,13 @@ pub mod configster {
     ///
     /// Options Without Values:
     ///
-    /// ```
+    /// ```text
     /// DefaultFeatureFooDisabled
     /// ```
     ///
     /// Accessing the Parsed Data:
     ///
-    /// ```
+    /// ```text
     /// use configster;
     ///
     /// let config_vec = configster::parse_file("./config.conf", ',');
