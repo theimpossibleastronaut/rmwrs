@@ -183,6 +183,25 @@ pub mod configster {
     }
 
     #[test]
+    fn test_parse_file() {
+        impl PartialEq for OptionProperties {
+            fn eq(&self, other: &Self) -> bool {
+                self.isbn == other.isbn
+            }
+        }
+
+        let val = OptionProperties {
+            option: "Waste".to_string(),
+            value: Value {
+                primary: "$HOME/.oxi-rmw-Trash-test".to_string(),
+                attributes: vec!["removable".to_string()],
+            },
+        };
+
+        assert_eq!(parse_file("./config_test", ',').unwrap(), vec![val]);
+    }
+
+    #[test]
     fn test_parse_line() {
         // Test with no attributes
         assert_eq!(
