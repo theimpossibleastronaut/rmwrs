@@ -74,6 +74,14 @@ pub mod configster {
     /// DefaultFeatureFooDisabled
     /// ```
     ///
+    /// Options With the Same Name:
+    ///
+    /// ```text
+    /// color = Green
+    /// color = Blue
+    /// color = Black
+    /// ```
+    ///
     /// Accessing the Parsed Data:
     ///
     /// ```
