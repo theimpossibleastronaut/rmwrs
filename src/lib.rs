@@ -32,7 +32,7 @@ pub mod configster {
         pub attributes: Vec<String>,
     }
 
-    #[derive(Debug)]
+    #[derive(Debug, PartialEq)]
     pub struct OptionProperties {
         pub option: String,
         pub value: Value,
