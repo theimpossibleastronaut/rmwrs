@@ -66,7 +66,7 @@ fn main() -> Result<(), io::Error> {
         config_file = opt.custom_config_file.unwrap();
     }
 
-    let config_vec = oxi_rmw::configster::parse_file(&config_file, ',');
+    let config_vec = configster::parse_file(&config_file, ',');
     if config_vec.is_err() {
         return io::Result::Err(config_vec.unwrap_err());
     }
