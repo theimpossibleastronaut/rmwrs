@@ -26,7 +26,7 @@ pub mod configster {
     use std::io;
     use std::io::{BufRead, BufReader};
 
-    #[derive(Debug)]
+    #[derive(Debug, PartialEq)]
     pub struct Value {
         pub primary: String,
         pub attributes: Vec<String>,
