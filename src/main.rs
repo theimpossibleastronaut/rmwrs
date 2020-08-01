@@ -1,6 +1,4 @@
-// use std::option::Option;
 use std::fs::rename;
-// use std::fmt::Display;
 use chrono::Local;
 use std::fs;
 use std::io;
@@ -31,12 +29,6 @@ struct Opt {
 }
 
 fn main() -> Result<(), io::Error> {
-    // https://github.com/openethereum/openethereum/pull/9077/files
-    // https://doc.rust-lang.org/std/option/enum.Option.html#variant.Some
-    /* "Because unwrap() may panic, its use is generally
-    discouraged. Instead, prefer to use pattern matching and handle the
-    None case explicitly, or call unwrap_or, unwrap_or_else, or
-    unwrap_or_default. */
     let homedir: String = dirs::home_dir()
         .unwrap_or_default()
         .to_str()
@@ -66,14 +58,11 @@ fn main() -> Result<(), io::Error> {
         config_file = opt.custom_config_file.unwrap();
     }
 
-    let config_vec = configster::parse_file(&config_file, ',');
-    if config_vec.is_err() {
-        return io::Result::Err(config_vec.unwrap_err());
-    }
+    let config_vec = configster::parse_file(&config_file, ',')?;
 
     let mut waste_list = Vec::new();
 
-    for i in &config_vec.unwrap() {
+    for i in &config_vec {
         if i.option == "WASTE" {
             let mut waste_properties = oxi_rmw::waste::WasteFolderProperties::new();
             waste_properties.parent = i.value.primary.replace("$HOME", &homedir);
@@ -82,20 +71,14 @@ fn main() -> Result<(), io::Error> {
             println!("Using {}", &waste_properties.info);
             if Path::new(&waste_properties.info).exists() == false {
                 println!("Creating {}", &waste_properties.info);
-                let r = fs::create_dir_all(&waste_properties.info);
-                if r.is_err() {
-                    return io::Result::Err(r.unwrap_err());
-                }
+                fs::create_dir_all(&waste_properties.info)?;
             }
 
             waste_properties.file = format!("{}{}", waste_properties.parent, "/files");
             println!("Using {}", &waste_properties.file);
             if Path::new(&waste_properties.file).exists() == false {
                 println!("Creating {}", &waste_properties.file);
-                let r = fs::create_dir_all(&waste_properties.file);
-                if r.is_err() {
-                    return io::Result::Err(r.unwrap_err());
-                }
+                fs::create_dir_all(&waste_properties.file)?;
             }
 
             if i.value.attributes[0] == "removable".to_string() {
