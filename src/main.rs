@@ -2,6 +2,7 @@ use std::fs::rename;
 use chrono::Local;
 use std::fs;
 use std::io;
+use std::os::unix::fs::MetadataExt;
 use std::path::{Path, PathBuf};
 use structopt::StructOpt;
 mod libgen;
@@ -84,6 +85,13 @@ fn main() -> Result<(), io::Error> {
             if i.value.attributes[0] == "removable".to_string() {
                 waste_properties.is_removable = true;
             }
+
+            // Device id not used yet. Used to determine what file system a file is on,
+            // and therefore which waste folder it can be rmw'ed to. (rmw doesn't move or
+            // copy files to different file systems. (Apparently not available on Windows:
+            // https://doc.rust-lang.org/std/os/windows/fs/trait.MetadataExt.html)
+            let meta = fs::metadata("some_file")?;
+            waste_properties.dev_num = meta.dev();
 
             waste_list.push(waste_properties);
         }
