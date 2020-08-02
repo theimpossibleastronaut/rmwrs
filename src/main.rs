@@ -90,7 +90,7 @@ fn main() -> Result<(), io::Error> {
             // and therefore which waste folder it can be rmw'ed to. (rmw doesn't move or
             // copy files to different file systems. (Apparently not available on Windows:
             // https://doc.rust-lang.org/std/os/windows/fs/trait.MetadataExt.html)
-            let meta = fs::metadata("some_file")?;
+            let meta = fs::metadata(&waste_properties.parent)?;
             waste_properties.dev_num = meta.dev();
 
             waste_list.push(waste_properties);
