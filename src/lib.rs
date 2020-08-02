@@ -6,7 +6,7 @@ pub mod waste {
         pub info: String,
         pub file: String,
         pub is_removable: bool,
-        pub dev_num: u64
+        pub dev_num: u64,
     }
 
     impl WasteFolderProperties {
@@ -16,8 +16,72 @@ pub mod waste {
                 info: String::new(),
                 file: String::new(),
                 is_removable: false,
-                dev_num: 0
+                dev_num: 0,
             }
         }
+    }
+}
+
+pub mod config {
+
+    use crate::waste;
+    use std::fs;
+    use std::io;
+    use std::os::unix::fs::MetadataExt;
+    use std::path::Path;
+
+    pub fn parse(
+        opt_cfg: Option<String>,
+        homedir: String,
+    ) -> io::Result<(
+        Vec<waste::WasteFolderProperties>,
+        Vec<configster::OptionProperties>,
+    )> {
+        let config_file: String;
+        if opt_cfg.is_none() {
+            config_file = "./config_test.conf".to_string();
+        } else {
+            config_file = opt_cfg.unwrap();
+        }
+
+        let mut waste_list = Vec::new();
+
+        let config_vec = configster::parse_file(&config_file, ',')?;
+
+        for i in &config_vec {
+            if i.option == "WASTE" {
+                let mut waste_properties = waste::WasteFolderProperties::new();
+                waste_properties.parent = i.value.primary.replace("$HOME", &homedir);
+
+                waste_properties.info = format!("{}{}", waste_properties.parent, "/info");
+                println!("Using {}", &waste_properties.info);
+                if Path::new(&waste_properties.info).exists() == false {
+                    println!("Creating {}", &waste_properties.info);
+                    fs::create_dir_all(&waste_properties.info)?;
+                }
+
+                waste_properties.file = format!("{}{}", waste_properties.parent, "/files");
+                println!("Using {}", &waste_properties.file);
+                if Path::new(&waste_properties.file).exists() == false {
+                    println!("Creating {}", &waste_properties.file);
+                    fs::create_dir_all(&waste_properties.file)?;
+                }
+
+                if i.value.attributes[0] == "removable".to_string() {
+                    waste_properties.is_removable = true;
+                }
+
+                // Device id not used yet. Used to determine what file system a file is on,
+                // and therefore which waste folder it can be rmw'ed to. (rmw doesn't move or
+                // copy files to different file systems. (Apparently not available on Windows:
+                // https://doc.rust-lang.org/std/os/windows/fs/trait.MetadataExt.html)
+                let meta = fs::metadata(&waste_properties.parent)?;
+                waste_properties.dev_num = meta.dev();
+
+                waste_list.push(waste_properties);
+            }
+        }
+
+        Ok((waste_list, config_vec))
     }
 }
