@@ -47,11 +47,11 @@ pub mod config {
     }
 
     fn assign_properties(
-        i: &configster::OptionProperties,
+        st_option_props: &configster::OptionProperties,
         homedir: &String,
     ) -> io::Result<waste::WasteFolderProperties> {
         let mut waste_properties = waste::WasteFolderProperties::new();
-        waste_properties.parent = i.value.primary.replace("$HOME", &homedir);
+        waste_properties.parent = st_option_props.value.primary.replace("$HOME", &homedir);
 
         waste_properties.info = format!("{}{}", waste_properties.parent, "/info");
         println!("Using {}", &waste_properties.info);
@@ -82,11 +82,11 @@ pub mod config {
 
         let config_vec = configster::parse_file(&config_file, ',')?;
 
-        for i in &config_vec {
-            if i.option == "WASTE" {
-                let mut waste_properties = assign_properties(&i, &homedir)?;
+        for st_i in &config_vec {
+            if st_i.option == "WASTE" {
+                let mut waste_properties = assign_properties(&st_i, &homedir)?;
 
-                if i.value.attributes[0] == "removable".to_string() {
+                if st_i.value.attributes[0] == "removable".to_string() {
                     waste_properties.is_removable = true;
                 }
 
