@@ -1,9 +1,7 @@
-// use std::option::Option;
-use std::fs::rename;
-// use std::fmt::Display;
 use chrono::Local;
-use std::fs;
-use std::path::{Path, PathBuf};
+use std::fs::rename;
+use std::io;
+use std::path::PathBuf;
 use structopt::StructOpt;
 mod libgen;
 mod trashinfo;
@@ -20,18 +18,16 @@ struct Opt {
     #[structopt(short = "V", long = "version")]
     version: bool,
 
+    /// Specify path/filename of alternate configuration file
+    #[structopt(short = "c", long = "config")]
+    custom_config_file: Option<String>,
+
     /// Files to process
     #[structopt(name = "FILE", parse(from_os_str))]
     files: Vec<PathBuf>,
 }
 
-fn main() {
-    // https://github.com/openethereum/openethereum/pull/9077/files
-    // https://doc.rust-lang.org/std/option/enum.Option.html#variant.Some
-    /* "Because unwrap() may panic, its use is generally
-    discouraged. Instead, prefer to use pattern matching and handle the
-    None case explicitly, or call unwrap_or, unwrap_or_else, or
-    unwrap_or_default. */
+fn main() -> Result<(), io::Error> {
     let homedir: String = dirs::home_dir()
         .unwrap_or_default()
         .to_str()
@@ -54,22 +50,15 @@ fn main() {
         println!();
     }
 
-    let waste_info = format!("{}/{}", homedir, ".oxi-rmw-Trash-test/info");
-    println!("Using {}", &waste_info);
-    if Path::new(&waste_info).exists() == false {
-        println!("Creating {}", &waste_info);
-        fs::create_dir_all(&waste_info).expect("Could not create directory");
-    }
-
-    let waste_files = format!("{}/{}", homedir, ".oxi-rmw-Trash-test/files");
-    println!("Using {}", &waste_files);
-    if Path::new(&waste_files).exists() == false {
-        println!("Creating {}", &waste_files);
-        fs::create_dir_all(&waste_files).expect("Could not create directory");
-    }
+    let (waste_list, _config_vec) = oxi_rmw::config::parse(opt.custom_config_file, homedir)?;
 
     let date_now = Local::now();
     let deletion_date = date_now.format("%Y-%m-%dT%H:%M:%S").to_string();
+
+    // This will be changed later; the subscript number for waste_list depends on whether or not
+    // the file being rmw'ed is
+    // on the same filesystem as the WASTE folder.
+    let waste = &waste_list[0];
 
     // The format of the trashinfo file corresponds to that of the FreeDesktop.org
     // Trash specification<https://specifications.freedesktop.org/trash-spec/trashspec-latest.html>.
@@ -79,10 +68,24 @@ fn main() {
 
         // Will need more error-checking to prevent overwriting existing destination files.
         // As in the C version of rmw, some type of time/date string is appended in that case.
-        let destination = format!("{}/{}", &waste_files, basename);
+        let destination = format!("{}/{}", &waste.file, basename);
+        println!("'{}' -> '{}'", file.display(), destination);
         rename(file, &destination).expect("Error renaming file");
 
         let contents = trashinfo::create_contents(&file_absolute, &deletion_date);
-        trashinfo::create(&basename, &waste_info, contents).expect("Error writing trashinfo file");
+        trashinfo::create(&basename, &waste.info, contents).expect("Error writing trashinfo file");
     }
+    Ok(())
+}
+
+#[test]
+fn test_bin_script() {
+    use std::process::Command;
+
+    let status = Command::new("tests/test.sh")
+        .args(&[""])
+        .status()
+        .expect("failed to execute process");
+
+    assert_eq!(status.success(), true);
 }
