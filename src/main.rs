@@ -83,11 +83,9 @@ fn test_bin_script() {
     use std::process::Command;
 
     let status = Command::new("tests/test.sh")
-            .args(&[""])
-            .status()
-            .expect("failed to execute process");
+        .args(&[""])
+        .status()
+        .expect("failed to execute process");
 
     assert_eq!(status.success(), true);
 }
-
-

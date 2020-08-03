@@ -27,6 +27,7 @@ pub mod config {
     use crate::waste;
     use std::fs;
     use std::io;
+    use std::io::{Error, ErrorKind};
     use std::os::unix::fs::MetadataExt;
     use std::path::Path;
 
@@ -69,6 +70,21 @@ pub mod config {
         Ok(waste_properties)
     }
 
+    fn is_removable(v_attrs: &Vec<String>) -> io::Result<bool> {
+        match v_attrs.get(0).is_some() {
+            true => {
+                if v_attrs[0] == "removable".to_string() {
+                    return Ok(true);
+                }
+                return io::Result::Err(Error::new(
+                    ErrorKind::InvalidData,
+                    "Unknown attribute (try 'removable'",
+                ));
+            }
+            false => return Ok(false),
+        };
+    }
+
     pub fn parse(
         opt_cfg: Option<String>,
         homedir: String,
@@ -82,13 +98,14 @@ pub mod config {
 
         let config_vec = configster::parse_file(&config_file, ',')?;
 
+        // This code will get replaced by a match statement later as we'll
+        // be adding more configuration options, such as 'purge_after' and
+        // 'force_required'
         for st_i in &config_vec {
             if st_i.option == "WASTE" {
                 let mut waste_properties = assign_properties(&st_i, &homedir)?;
 
-                if st_i.value.attributes[0] == "removable".to_string() {
-                    waste_properties.is_removable = true;
-                }
+                waste_properties.is_removable = is_removable(&st_i.value.attributes)?;
 
                 waste_properties.dev_num = get_dev_num(&waste_properties.parent)?;
 
