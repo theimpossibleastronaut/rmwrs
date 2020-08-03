@@ -1,8 +1,10 @@
 [package]
 name = "oxi-rmw"
-version = "0.0.1"
-authors = ["andy5995 <andy400-dev@yahoo.com>"]
+version = "0.1.0"
+authors = ["andy5995 <andy400-dev@yahoo.com>", "James Sherratt"]
 edition = "2018"
+description = "Rust port of rmw, a safe-remove utility for the command line"
+homepage = "https://github.com/theimpossibleastronaut/oxi-rmw"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
