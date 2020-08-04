@@ -17,6 +17,15 @@ pub mod cli_options {
         #[structopt(name = "FILE", parse(from_os_str))]
         pub files: Vec<PathBuf>,
     }
+
+    pub fn show_version() {
+        println!(
+            "{} version: {}",
+            env!("CARGO_PKG_NAME"),
+            env!("CARGO_PKG_VERSION")
+        );
+        println!();
+    }
 }
 
 pub mod libgen {

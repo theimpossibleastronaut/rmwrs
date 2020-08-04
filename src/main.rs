@@ -3,6 +3,7 @@ use std::fs::rename;
 use std::io;
 use structopt::StructOpt;
 mod trashinfo;
+use oxi_rmw::cli_options;
 
 fn main() -> Result<(), io::Error> {
     let homedir: String = dirs::home_dir()
@@ -14,12 +15,7 @@ fn main() -> Result<(), io::Error> {
     let opt = oxi_rmw::cli_options::Opt::from_args();
 
     if opt.version {
-        println!(
-            "{} version: {}",
-            env!("CARGO_PKG_NAME"),
-            env!("CARGO_PKG_VERSION")
-        );
-        println!();
+        cli_options::show_version();
     }
 
     let (waste_list, _config_vec) = oxi_rmw::config::parse(opt.custom_config_file, homedir)?;
