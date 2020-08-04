@@ -73,12 +73,17 @@ fn main() -> Result<(), io::Error> {
         // As in the C version of rmw, some type of time/date string is appended in that case.
         let destination = format!("{}/{}", &waste.file, basename);
         println!("'{}' -> '{}'", file.display(), destination);
-        rename(file, &destination).expect("Error renaming file");
-
-        renamed_list.push(file_absolute.clone());
-
-        let contents = trashinfo::create_contents(&file_absolute, &deletion_date);
-        trashinfo::create(&basename, &waste.info, contents).expect("Error writing trashinfo file");
+        if rename(file, &destination).is_ok() {
+            renamed_list.push(file_absolute.clone());
+            let contents = trashinfo::create_contents(&file_absolute, &deletion_date);
+            trashinfo::create(&basename, &waste.info, contents)
+                .expect("Error writing trashinfo file");
+        } else {
+            // We don't want to exit the program, just try the next file. At some
+            // we might consider implementing an error counter (e.g. if err > 3
+            // then print fatal message && exit).
+            println!("Unable to rename {}", file.display());
+        }
     }
 
     // I don't think we need a unit test for mrl file creation; when there's a restore
