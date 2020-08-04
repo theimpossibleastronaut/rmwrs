@@ -44,7 +44,7 @@ pub mod mrl {
     use std::io::prelude::*;
     use std::io::LineWriter;
 
-    pub fn create(l: &Vec<String>) -> Result<(), io::Error> {
+    pub fn create(l: &[String]) -> Result<(), io::Error> {
         if l.get(0).is_some() {
             let file = File::create("./mrl")?;
             let mut file = LineWriter::new(file);
@@ -65,6 +65,12 @@ pub mod waste {
         pub file: String,
         pub is_removable: bool,
         pub dev_num: u64,
+    }
+
+    impl Default for WasteFolderProperties {
+        fn default() -> Self {
+            Self::new()
+        }
     }
 
     impl WasteFolderProperties {
@@ -96,7 +102,7 @@ pub mod config {
         opt_cfg.unwrap()
     }
 
-    fn get_dev_num(wp: &String) -> io::Result<u64> {
+    fn get_dev_num(wp: &str) -> io::Result<u64> {
         // Device num not used yet. Used to determine what file system a file is on,
         // and therefore which waste folder it can be rmw'ed to. (rmw doesn't move or
         // copy files to different file systems. (Apparently not available on Windows:
@@ -107,40 +113,41 @@ pub mod config {
 
     fn assign_properties(
         st_option_props: &configster::OptionProperties,
-        homedir: &String,
+        homedir: &str,
     ) -> io::Result<waste::WasteFolderProperties> {
         let mut waste_properties = waste::WasteFolderProperties::new();
         waste_properties.parent = st_option_props.value.primary.replace("$HOME", &homedir);
 
         waste_properties.info = format!("{}{}", waste_properties.parent, "/info");
         println!("Using {}", &waste_properties.info);
-        if Path::new(&waste_properties.info).exists() == false {
+        if !Path::new(&waste_properties.info).exists() {
             println!("Creating {}", &waste_properties.info);
             fs::create_dir_all(&waste_properties.info)?;
         }
 
         waste_properties.file = format!("{}{}", waste_properties.parent, "/files");
         println!("Using {}", &waste_properties.file);
-        if Path::new(&waste_properties.file).exists() == false {
+        if !Path::new(&waste_properties.file).exists() {
             println!("Creating {}", &waste_properties.file);
             fs::create_dir_all(&waste_properties.file)?;
         }
         Ok(waste_properties)
     }
 
-    fn is_removable(v_attrs: &Vec<String>) -> io::Result<bool> {
+    fn is_removable(v_attrs: &[String]) -> io::Result<bool> {
         match v_attrs.get(0).is_some() {
             true => {
-                if v_attrs[0] == "removable".to_string() {
-                    return Ok(true);
+                if v_attrs[0] == "removable" {
+                    Ok(true)
+                } else {
+                    io::Result::Err(Error::new(
+                        ErrorKind::InvalidData,
+                        "Unknown attribute (try 'removable'",
+                    ))
                 }
-                return io::Result::Err(Error::new(
-                    ErrorKind::InvalidData,
-                    "Unknown attribute (try 'removable'",
-                ));
             }
-            false => return Ok(false),
-        };
+            false => Ok(false),
+        }
     }
 
     pub fn parse(

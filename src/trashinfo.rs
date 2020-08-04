@@ -1,7 +1,7 @@
 use std::fs;
 use std::io;
 
-pub fn create_contents(f: &str, dd: &String) -> String {
+pub fn create_contents(f: &str, dd: &str) -> String {
     let header = "[TrashInfo]";
     format!("{}\nPath={}\nDeletionDate={}\n", header, f, dd)
 }
@@ -16,7 +16,7 @@ fn check_create_trashinfo_contents() {
     );
 }
 
-pub fn create(basename: &str, waste_info: &String, contents: String) -> Result<(), io::Error> {
+pub fn create(basename: &str, waste_info: &str, contents: String) -> Result<(), io::Error> {
     let trashinfo_filename = format!("{}{}", basename, ".trashinfo");
     let trashinfo_dest = format!("{}/{}", &waste_info, trashinfo_filename);
     fs::write(trashinfo_dest, contents)
