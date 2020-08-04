@@ -1,4 +1,3 @@
-use chrono::Local;
 use std::fs::rename;
 use std::io;
 use structopt::StructOpt;
@@ -20,7 +19,7 @@ fn main() -> Result<(), io::Error> {
 
     let (waste_list, _config_vec) = oxi_rmw::config::parse(opt.custom_config_file, homedir)?;
 
-    let date_now = Local::now();
+    let date_now = chrono::Local::now();
     let deletion_date = date_now.format("%Y-%m-%dT%H:%M:%S").to_string();
 
     let mut renamed_list: Vec<String> = Vec::new();
