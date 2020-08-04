@@ -3,7 +3,6 @@ use std::fs::rename;
 use std::io;
 use std::path::PathBuf;
 use structopt::StructOpt;
-mod libgen;
 mod trashinfo;
 
 #[derive(Debug, StructOpt)]
@@ -55,7 +54,7 @@ fn main() -> Result<(), io::Error> {
     // The format of the trashinfo file corresponds to that of the FreeDesktop.org
     // Trash specification<https://specifications.freedesktop.org/trash-spec/trashspec-latest.html>.
     for file in &opt.files {
-        let basename = libgen::get_basename(&file).to_str().unwrap();
+        let basename = oxi_rmw::libgen::get_basename(&file).to_str().unwrap();
 
         let file_absolute = file.canonicalize().unwrap().display().to_string();
 
