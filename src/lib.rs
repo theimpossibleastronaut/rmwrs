@@ -49,8 +49,7 @@ pub mod mrl {
             let file = File::create("./mrl")?;
             let mut file = LineWriter::new(file);
             for i in l {
-                file.write_all(i.as_bytes())?;
-                file.write_all(b"\n")?;
+                file.write_all((i.clone() + "\n").as_bytes())?;
             }
             file.flush()?
         }
