@@ -9,11 +9,6 @@ mod trashinfo;
 #[derive(Debug, StructOpt)]
 #[structopt(name = "example", about = "An example of StructOpt usage.")]
 struct Opt {
-    /// Activate debug mode
-    // short and long flags (-d, --debug) will be deduced from the field's name
-    #[structopt(short, long)]
-    debug: bool,
-
     /// Show version
     #[structopt(short = "V", long = "version")]
     version: bool,
@@ -35,11 +30,6 @@ fn main() -> Result<(), io::Error> {
         .into();
 
     let opt = Opt::from_args();
-
-    if opt.debug {
-        println!("Your home directory: {:?}", homedir);
-        println!("{:?}", opt);
-    }
 
     if opt.version {
         println!(
