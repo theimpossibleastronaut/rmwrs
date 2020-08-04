@@ -1,5 +1,26 @@
 pub mod libgen;
 
+pub mod mrl {
+
+    use std::fs::File;
+    use std::io;
+    use std::io::prelude::*;
+    use std::io::LineWriter;
+
+    pub fn create(l: &Vec<String>) -> Result<(), io::Error> {
+        if l.get(0).is_some() {
+            let file = File::create("./mrl")?;
+            let mut file = LineWriter::new(file);
+            for i in l {
+                file.write_all(i.as_bytes())?;
+                file.write_all(b"\n")?;
+            }
+            file.flush()?
+        }
+        Ok(())
+    }
+}
+
 pub mod waste {
     pub struct WasteFolderProperties {
         pub parent: String,

@@ -55,6 +55,8 @@ fn main() -> Result<(), io::Error> {
     let date_now = Local::now();
     let deletion_date = date_now.format("%Y-%m-%dT%H:%M:%S").to_string();
 
+    let mut renamed_list: Vec<String> = Vec::new();
+
     // This will be changed later; the subscript number for waste_list depends on whether or not
     // the file being rmw'ed is
     // on the same filesystem as the WASTE folder.
@@ -64,6 +66,7 @@ fn main() -> Result<(), io::Error> {
     // Trash specification<https://specifications.freedesktop.org/trash-spec/trashspec-latest.html>.
     for file in &opt.files {
         let basename = libgen::get_basename(&file).to_str().unwrap();
+
         let file_absolute = file.canonicalize().unwrap().display().to_string();
 
         // Will need more error-checking to prevent overwriting existing destination files.
@@ -72,9 +75,17 @@ fn main() -> Result<(), io::Error> {
         println!("'{}' -> '{}'", file.display(), destination);
         rename(file, &destination).expect("Error renaming file");
 
+        renamed_list.push(file_absolute.clone());
+
         let contents = trashinfo::create_contents(&file_absolute, &deletion_date);
         trashinfo::create(&basename, &waste.info, contents).expect("Error writing trashinfo file");
     }
+
+    // I don't think we need a unit test for mrl file creation; when there's a restore
+    // and undo function,
+    // it can be tested easily using the bin script test.
+    oxi_rmw::mrl::create(&renamed_list)?;
+
     Ok(())
 }
 
