@@ -1,25 +1,8 @@
 use chrono::Local;
 use std::fs::rename;
 use std::io;
-use std::path::PathBuf;
 use structopt::StructOpt;
 mod trashinfo;
-
-#[derive(Debug, StructOpt)]
-#[structopt(name = "example", about = "An example of StructOpt usage.")]
-struct Opt {
-    /// Show version
-    #[structopt(short = "V", long = "version")]
-    version: bool,
-
-    /// Specify path/filename of alternate configuration file
-    #[structopt(short = "c", long = "config")]
-    custom_config_file: Option<String>,
-
-    /// Files to process
-    #[structopt(name = "FILE", parse(from_os_str))]
-    files: Vec<PathBuf>,
-}
 
 fn main() -> Result<(), io::Error> {
     let homedir: String = dirs::home_dir()
@@ -28,7 +11,7 @@ fn main() -> Result<(), io::Error> {
         .unwrap()
         .into();
 
-    let opt = Opt::from_args();
+    let opt = oxi_rmw::cli_options::Opt::from_args();
 
     if opt.version {
         println!(

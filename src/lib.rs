@@ -1,3 +1,24 @@
+pub mod cli_options {
+    use std::path::PathBuf;
+    use structopt::StructOpt;
+
+    #[derive(Debug, StructOpt)]
+    #[structopt(name = "example", about = "An example of StructOpt usage.")]
+    pub struct Opt {
+        /// Show version
+        #[structopt(short = "V", long = "version")]
+        pub version: bool,
+
+        /// Specify path/filename of alternate configuration file
+        #[structopt(short = "c", long = "config")]
+        pub custom_config_file: Option<String>,
+
+        /// Files to process
+        #[structopt(name = "FILE", parse(from_os_str))]
+        pub files: Vec<PathBuf>,
+    }
+}
+
 pub mod libgen {
     use std::ffi::OsStr;
     use std::path::Path;
