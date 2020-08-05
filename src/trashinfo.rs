@@ -1,10 +1,10 @@
 use std::fs;
 use std::io;
 
-/// The format of the trashinfo file corresponds to that of the FreeDesktop.org
-/// Trash specification<https://specifications.freedesktop.org/trash-spec/trashspec-latest.html>.
 pub struct Trashinfo(String, String, String);
 
+/// The format of the trashinfo file corresponds to that of the FreeDesktop.org
+/// Trash specification<https://specifications.freedesktop.org/trash-spec/trashspec-latest.html>.
 impl Trashinfo {
     pub fn new(path_and_filename: &str, deletion_date: &str) -> Self {
         Self {
