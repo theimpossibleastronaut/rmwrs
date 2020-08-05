@@ -6,6 +6,8 @@ edition = "2018"
 description = "Rust port of rmw, a safe-remove utility for the command line"
 homepage = "https://github.com/theimpossibleastronaut/oxi-rmw"
 
+publish = false
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
