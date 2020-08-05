@@ -1,6 +1,8 @@
 use std::fs;
 use std::io;
 
+/// The format of the trashinfo file corresponds to that of the FreeDesktop.org
+/// Trash specification<https://specifications.freedesktop.org/trash-spec/trashspec-latest.html>.
 pub struct Trashinfo(String, String, String);
 
 impl Trashinfo {

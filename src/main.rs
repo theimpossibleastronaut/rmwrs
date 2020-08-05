@@ -29,8 +29,6 @@ fn main() -> Result<(), io::Error> {
     // on the same filesystem as the WASTE folder.
     let waste = &waste_list[0];
 
-    // The format of the trashinfo file corresponds to that of the FreeDesktop.org
-    // Trash specification<https://specifications.freedesktop.org/trash-spec/trashspec-latest.html>.
     for file in &opt.files {
         let basename = oxi_rmw::libgen::get_basename(&file).to_str().unwrap();
 
