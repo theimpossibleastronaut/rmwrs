@@ -42,11 +42,13 @@ fn main() -> Result<(), io::Error> {
         println!("'{}' -> '{}'", file.display(), destination);
         if rename(file, &destination).is_ok() {
             renamed_list.push(file_absolute.clone());
-            let contents = trashinfo::create_contents(&file_absolute, &deletion_date);
-            trashinfo::create(&basename, &waste.info, contents)
+            let trashinfo_file_contents =
+                trashinfo::Trashinfo::new(&file_absolute, &deletion_date).to_contents();
+
+            trashinfo::create(&basename, &waste.info, trashinfo_file_contents)
                 .expect("Error writing trashinfo file");
         } else {
-            // We don't want to exit the program, just try the next file. At some
+            // We don't want to exit the program, just try the next file. In the future
             // we might consider implementing an error counter (e.g. if err > 3
             // then print fatal message && exit).
             println!("Unable to rename {}", file.display());
