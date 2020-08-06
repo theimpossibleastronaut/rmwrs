@@ -1,21 +1,15 @@
 use std::fs;
 use std::io;
 
-pub struct Trashinfo(String, String, String);
-
 /// The format of the trashinfo file corresponds to that of the FreeDesktop.org
 /// Trash specification<https://specifications.freedesktop.org/trash-spec/trashspec-latest.html>.
-impl Trashinfo {
-    pub fn new(path_and_filename: &str, deletion_date: &str) -> Self {
-        Self {
-            0: "[TrashInfo]".to_string(),
-            1: path_and_filename.to_string(),
-            2: deletion_date.to_string(),
-        }
-    }
-    pub fn to_contents(&self) -> String {
-        format!("{}\nPath={}\nDeletionDate={}\n", self.0, self.1, self.2)
-    }
+pub fn create_contents(path_and_filename: &str, deletion_date: &str) -> String {
+    format!(
+        "{}\nPath={}\nDeletionDate={}\n",
+        "[TrashInfo]".to_string(),
+        path_and_filename.to_string(),
+        deletion_date.to_string()
+    )
 }
 
 #[test]
@@ -23,7 +17,7 @@ fn check_create_trashinfo_contents() {
     let deletion_date = format!("{}", "2020-07-23T20:56:03".to_string());
     let file: &str = "/home/foo/bar";
     assert_eq!(
-        Trashinfo::new(&file, &deletion_date).to_contents(),
+        create_contents(&file, &deletion_date),
         "[TrashInfo]\nPath=/home/foo/bar\nDeletionDate=2020-07-23T20:56:03\n"
     );
 }
