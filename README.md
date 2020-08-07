@@ -1,7 +1,7 @@
-# oxi-rmw
+# rmwrs
 
 [![Build
-Status](https://travis-ci.com/theimpossibleastronaut/oxi-rmw.svg?branch=trunk)](https://travis-ci.com/theimpossibleastronaut/oxi-rmw)
+Status](https://travis-ci.com/theimpossibleastronaut/rmwrs.svg?branch=trunk)](https://travis-ci.com/theimpossibleastronaut/rmwrs)
 
 **Not ready for use**
 
@@ -9,7 +9,7 @@ Status](https://travis-ci.com/theimpossibleastronaut/oxi-rmw.svg?branch=trunk)](
 
 ## Current state
 
-oxi-rmw is in a very early development state and may change rapidly.
+rmwrs is in a very early development state and may change rapidly.
 Presently files can be removed to a WASTE directory but there's no
 `restore` feature.
 
@@ -29,9 +29,9 @@ Example 2:
     touch tmp/foo tmp/bar
     cargo run -- tmp/*
 
-You'll see that the files were removed to ~/.oxi-rmw-Trash-test/files
+You'll see that the files were removed to ~/.rmwrs-Trash-test/files
 and corresponding .trashinfo files were created in
-~/.oxi-rmw-Trash-test/info. The .trashinfo file uses the
+~/.rmwrs-Trash-test/info. The .trashinfo file uses the
 [FreeDesktop.org Trash specification](https://specifications.freedesktop.org/trash-spec/trashspec-latest.html).
 
 ## Configuration file
@@ -40,7 +40,7 @@ You can specify an alternate/custom configuration file for testing:
 
     cargo run -- tmp/* -c <filename>
 
-To tell git to ignore your custom config file, from the 'oxi-rmw' repo
+To tell git to ignore your custom config file, from the 'rmwrs' repo
 directory:
 
     echo <filename> >> .git/info/exclude

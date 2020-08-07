@@ -1,4 +1,4 @@
-use oxi_rmw::libgen::get_basename;
+use rmwrs::libgen::get_basename;
 use std::path::PathBuf;
 
 #[test]

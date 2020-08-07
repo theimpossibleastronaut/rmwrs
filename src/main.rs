@@ -2,7 +2,7 @@ use std::fs::rename;
 use std::io;
 use structopt::StructOpt;
 mod trashinfo;
-use oxi_rmw::cli_options;
+use rmwrs::cli_options;
 
 fn main() -> Result<(), io::Error> {
     let homedir: String = dirs::home_dir()
@@ -11,13 +11,13 @@ fn main() -> Result<(), io::Error> {
         .unwrap()
         .into();
 
-    let opt = oxi_rmw::cli_options::Opt::from_args();
+    let opt = rmwrs::cli_options::Opt::from_args();
 
     if opt.version {
         cli_options::show_version();
     }
 
-    let (waste_list, _config_vec) = oxi_rmw::config::parse(opt.custom_config_file, homedir)?;
+    let (waste_list, _config_vec) = rmwrs::config::parse(opt.custom_config_file, homedir)?;
 
     let date_now = chrono::Local::now();
     let deletion_date = date_now.format("%Y-%m-%dT%H:%M:%S").to_string();
@@ -30,7 +30,7 @@ fn main() -> Result<(), io::Error> {
     let waste = &waste_list[0];
 
     for file in &opt.files {
-        let basename = oxi_rmw::libgen::get_basename(&file).to_str().unwrap();
+        let basename = rmwrs::libgen::get_basename(&file).to_str().unwrap();
 
         let file_absolute = file.canonicalize().unwrap().display().to_string();
 
@@ -56,7 +56,7 @@ fn main() -> Result<(), io::Error> {
     // I don't think we need a unit test for mrl file creation; when there's a restore
     // and undo function,
     // it can be tested easily using the bin script test.
-    oxi_rmw::mrl::create(&renamed_list)?;
+    rmwrs::mrl::create(&renamed_list)?;
 
     Ok(())
 }

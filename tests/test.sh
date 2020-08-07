@@ -11,10 +11,10 @@ test_result_want_fail() {
   set -x
 }
 
-TEST_WASTE_FOLDER="tests/oxi-rmw-Trash-test"
+TEST_WASTE_FOLDER="tests/rmwrs-Trash-test"
 
 if test -r ${TEST_WASTE_FOLDER}; then
-  rm -rf tests/oxi-rmw-Trash-test
+  rm -rf tests/rmwrs-Trash-test
 fi
 
 touch foo bar || exit $?

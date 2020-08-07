@@ -1,9 +1,9 @@
-# Contributing to oxi-rmw
+# Contributing to rmwrs
 
 ## Bug Reports and Feature Requests
 
 Anyone may [open an
-issue](https://github.com/theimpossibleastronaut/oxi-rmw/issues).
+issue](https://github.com/theimpossibleastronaut/rmwrs/issues).
 
 ## Coding Standards
 
@@ -37,7 +37,7 @@ flexible and more than 5 will still be gratefully accepted for review.
 
 If you're submitting a documentation-only PR, please add `[skip ci]` to
 the commit message; it will prevent automatic code testing on
-[Travis](https://travis-ci.com/theimpossibleastronaut/oxi-rmw).
+[Travis](https://travis-ci.com/theimpossibleastronaut/rmwrs).
 
 ## Syncing
 
@@ -45,6 +45,6 @@ Periodically, you'll need to sync your repo with the upstream.
 GitHub has instructions for doing this
 
 * [Configuring a remote for a fork](https://help.github.com/articles/configuring-a-remote-for-a-fork/)
-  * For step 3 on that page, use https://github.com/theimpossibleastronaut.com/oxi-rmw.git for the URL.
+  * For step 3 on that page, use https://github.com/theimpossibleastronaut.com/rmwrs.git for the URL.
 * [Syncing a Fork](https://help.github.com/articles/syncing-a-fork/)
   * On that page, it shows how to merge the **trunk** branch (steps 4 & 5).
