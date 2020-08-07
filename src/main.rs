@@ -41,7 +41,7 @@ fn main() -> Result<(), io::Error> {
         if rename(file, &destination).is_ok() {
             renamed_list.push(file_absolute.clone());
             let trashinfo_file_contents =
-                trashinfo::create_contents(&file_absolute, &deletion_date);
+                trashinfo::Trashinfo::new(&file_absolute, &deletion_date).to_contents();
 
             trashinfo::create(&basename, &waste.info, trashinfo_file_contents)
                 .expect("Error writing trashinfo file");
