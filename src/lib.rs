@@ -40,9 +40,7 @@ pub mod libgen {
 pub mod mrl {
 
     use std::fs::File;
-    use std::io;
-    use std::io::prelude::*;
-    use std::io::LineWriter;
+    use std::io::{self, prelude::*, LineWriter};
 
     pub fn create(l: &[String]) -> Result<(), io::Error> {
         if l.get(0).is_some() {
@@ -89,8 +87,7 @@ pub mod config {
 
     use crate::waste;
     use std::fs;
-    use std::io;
-    use std::io::{Error, ErrorKind};
+    use std::io::{self, Error, ErrorKind};
     use std::os::unix::fs::MetadataExt;
     use std::path::Path;
 
