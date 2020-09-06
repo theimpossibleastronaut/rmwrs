@@ -9,6 +9,9 @@ pub mod cli_options {
         #[structopt(short = "V", long = "version")]
         pub version: bool,
 
+        #[structopt(short = "v", long = "verbose")]
+        pub verbose: bool,
+
         /// Specify path/filename of alternate configuration file
         #[structopt(short = "c", long = "config")]
         pub custom_config_file: Option<String>,

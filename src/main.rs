@@ -1,17 +1,20 @@
 use std::fs::rename;
-use std::io;
+use std::io::{self, ErrorKind};
 use structopt::StructOpt;
 mod trashinfo;
 use rmwrs::cli_options;
 
 fn main() -> Result<(), io::Error> {
-    let homedir: String = dirs::home_dir()
-        .unwrap_or_default()
-        .to_str()
-        .unwrap()
-        .into();
+    let homedir = match dirs::home_dir() {
+        None => return Err(io::Error::new(ErrorKind::NotFound, "oh no!")),
+        Some(homedir) => homedir.to_str().unwrap().into(),
+    };
 
     let opt = rmwrs::cli_options::Opt::from_args();
+
+    if opt.verbose {
+        println!("homedir: '{}'", homedir);
+    }
 
     if opt.version {
         cli_options::show_version();
