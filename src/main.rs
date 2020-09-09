@@ -1,14 +1,12 @@
 use std::fs::rename;
-use std::io::{self, ErrorKind};
+use std::io;
 use structopt::StructOpt;
 mod trashinfo;
 use rmwrs::cli_options;
 
 fn main() -> Result<(), io::Error> {
-    let homedir = match dirs::home_dir() {
-        None => return Err(io::Error::new(ErrorKind::NotFound, "oh no!")),
-        Some(homedir) => homedir.to_str().unwrap().into(),
-    };
+    let homedir = rmwrs::get_homedir()?;
+    let datadir = rmwrs::get_datadir(&homedir);
 
     let opt = rmwrs::cli_options::Opt::from_args();
 
@@ -20,7 +18,9 @@ fn main() -> Result<(), io::Error> {
         cli_options::show_version();
     }
 
-    let (waste_list, _config_vec) = rmwrs::config::parse(opt.custom_config_file, homedir)?;
+    let config_file = rmwrs::config::get_filename(&homedir, opt.custom_config_file);
+
+    let (waste_list, _config_vec) = rmwrs::config::parse(&homedir, &config_file)?;
 
     let date_now = chrono::Local::now();
     let deletion_date = date_now.format("%Y-%m-%dT%H:%M:%S").to_string();
@@ -59,7 +59,7 @@ fn main() -> Result<(), io::Error> {
     // I don't think we need a unit test for mrl file creation; when there's a restore
     // and undo function,
     // it can be tested easily using the bin script test.
-    rmwrs::mrl::create(&renamed_list)?;
+    rmwrs::mrl::create(&datadir, &renamed_list)?;
 
     Ok(())
 }

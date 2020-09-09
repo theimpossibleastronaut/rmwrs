@@ -1,3 +1,35 @@
+use std::env;
+use std::io::{self, ErrorKind};
+
+pub fn get_homedir() -> io::Result<String> {
+    let homedir: String = match env::var("RMWRS_TEST_HOME") {
+        Ok(val) => val,
+        Err(_e) => match dirs::home_dir() {
+            None => {
+                return Err(io::Error::new(
+                    ErrorKind::NotFound,
+                    "Unable to determine homedir",
+                ))
+            }
+            Some(homedir) => homedir.to_str().unwrap().into(),
+        },
+    };
+    Ok(homedir)
+}
+
+pub fn get_datadir(homedir: &str) -> String {
+    let data_home: String = match env::var("XDG_DATA_HOME") {
+        Ok(val) => val,
+        Err(_e) => format!("{}{}", homedir, "/.local/share").to_string(),
+    };
+    let datadir = data_home + "/rmwrs";
+    if !std::path::Path::new(&datadir).exists() {
+        println!("Creating {}", &datadir);
+        std::fs::create_dir_all(&datadir).expect("Unable to create config directory");
+    }
+    datadir
+}
+
 pub mod cli_options {
     use std::path::PathBuf;
     use structopt::StructOpt;
@@ -45,9 +77,9 @@ pub mod mrl {
     use std::fs::File;
     use std::io::{self, prelude::*, LineWriter};
 
-    pub fn create(l: &[String]) -> Result<(), io::Error> {
+    pub fn create(datadir: &str, l: &[String]) -> Result<(), io::Error> {
         if l.get(0).is_some() {
-            let file = File::create("./mrl")?;
+            let file = File::create(datadir.to_string() + "/mrl")?;
             let mut file = LineWriter::new(file);
             for i in l {
                 file.write_all((i.clone() + "\n").as_bytes())?;
@@ -89,16 +121,27 @@ pub mod waste {
 pub mod config {
 
     use crate::waste;
+    use std::env;
     use std::fs;
     use std::io::{self, Error, ErrorKind};
     use std::os::unix::fs::MetadataExt;
     use std::path::Path;
 
-    fn get_filename(opt_cfg: Option<String>) -> String {
+    pub fn get_filename(homedir: &str, opt_cfg: Option<String>) -> String {
+        let config_home;
         if opt_cfg.is_none() {
-            return "./config_test.conf".to_string();
+            config_home = match env::var("XDG_CONFIG_HOME") {
+                Ok(val) => val,
+                Err(_e) => format!("{}{}", homedir, "/.config").to_string(),
+            };
+            if !Path::new(&config_home).exists() {
+                println!("Creating {}", &config_home);
+                fs::create_dir_all(&config_home).expect("Unable to create config directory");
+            }
+            return config_home + "/rmwrsrc";
+        } else {
+            return opt_cfg.unwrap();
         }
-        opt_cfg.unwrap()
     }
 
     fn get_dev_num(wp: &str) -> io::Result<u64> {
@@ -150,15 +193,20 @@ pub mod config {
     }
 
     pub fn parse(
-        opt_cfg: Option<String>,
-        homedir: String,
+        homedir: &str,
+        config_file: &str,
     ) -> io::Result<(
         Vec<waste::WasteFolderProperties>,
         Vec<configster::OptionProperties>,
     )> {
-        let config_file = get_filename(opt_cfg);
-
         let mut waste_list = Vec::new();
+
+        if !std::path::Path::new(&config_file).exists() {
+            fs::write(
+                &config_file,
+                "WASTE = $HOME/.rmwrs-Trash-test,removable\npurge_after = 90\nforce_required",
+            )?;
+        }
 
         let config_vec = configster::parse_file(&config_file, ',')?;
 

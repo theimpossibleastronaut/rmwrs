@@ -9,7 +9,7 @@ Status](https://travis-ci.com/theimpossibleastronaut/rmwrs.svg?branch=trunk)](ht
 
 ## Current state
 
-rmwrs is in a very early development state and may change rapidly.
+*rmwrs* is in a very early development state and may change rapidly.
 Presently files can be removed to a WASTE directory but there's no
 `restore` feature.
 
@@ -36,14 +36,22 @@ and corresponding .trashinfo files were created in
 
 ## Configuration file
 
-You can specify an alternate/custom configuration file for testing:
+*rmwrs* will automatically create a configuration file (rmwrsrc) in
+$XDG_DATA_HOME (if the environmental variable is set) or `~/.config`.
 
-    cargo run -- tmp/* -c <filename>
+You can specify an alternate/custom configuration file.
 
-To tell git to ignore your custom config file, from the 'rmwrs' repo
-directory:
+    cargo run -- tmp/* -c <custom-config-file>
 
-    echo <filename> >> .git/info/exclude
+## Most Recent List (mrl) file
+
+The names of files that you "remove" will be stored in an mrl file in
+$XDG_DATA_HOME/rmwrs (if the environmental variable is set) or
+~/.local/share/rmwrs. Each time you run it, the file gets overwritten
+with the new filenames.
+
+The mrl file isn't used for anything yet. Later it will be used by the
+restore and undo function.
 
 ## More Info
 

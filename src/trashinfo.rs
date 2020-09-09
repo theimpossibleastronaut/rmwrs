@@ -8,7 +8,7 @@ pub struct Trashinfo(String, String, String);
 impl Trashinfo {
     pub fn new(path_and_filename: &str, deletion_date: &str) -> Self {
         Self {
-            0: "[TrashInfo]".to_string(),
+            0: "[Trash Info]".to_string(),
             1: path_and_filename.to_string(),
             2: deletion_date.to_string(),
         }
@@ -24,7 +24,7 @@ fn check_create_trashinfo_contents() {
     let file: &str = "/home/foo/bar";
     assert_eq!(
         Trashinfo::new(&file, &deletion_date).to_contents(),
-        "[TrashInfo]\nPath=/home/foo/bar\nDeletionDate=2020-07-23T20:56:03\n"
+        "[Trash Info]\nPath=/home/foo/bar\nDeletionDate=2020-07-23T20:56:03\n"
     );
 }
 

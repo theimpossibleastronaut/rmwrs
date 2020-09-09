@@ -1,5 +1,3 @@
 WASTE = $HOME/.rmwrs-Trash-test,removable
-#WASTE = /foo/bar,removable, bar, foo
 purge_after = 90
-
 force_required
