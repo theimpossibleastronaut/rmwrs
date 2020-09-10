@@ -35,7 +35,6 @@ pub mod cli_options {
     use structopt::StructOpt;
 
     #[derive(Debug, StructOpt)]
-    #[structopt(name = "example", about = "An example of StructOpt usage.")]
     pub struct Opt {
         /// Show version
         #[structopt(short = "V", long = "version")]

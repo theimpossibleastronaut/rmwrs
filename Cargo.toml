@@ -1,6 +1,6 @@
 [package]
 name = "rmwrs"
-version = "0.1.0"
+version = "0.1.0-dev"
 authors = ["andy5995 <andy400-dev@yahoo.com>", "James Sherratt"]
 edition = "2018"
 description = "Rust port of rmw, a safe-remove utility for the command line"
