@@ -37,7 +37,7 @@ and corresponding .trashinfo files were created in
 ## Configuration file
 
 *rmwrs* will automatically create a configuration file (rmwrsrc) in
-$XDG_DATA_HOME (if the environmental variable is set) or `~/.config`.
+$XDG_CONFIG_HOME (if the environmental variable is set) or `~/.config`.
 
 You can specify an alternate/custom configuration file.
 
