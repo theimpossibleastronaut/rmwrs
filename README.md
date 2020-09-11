@@ -34,6 +34,10 @@ and corresponding .trashinfo files were created in
 ~/.rmwrs-Trash-test/info. The .trashinfo file uses the
 [FreeDesktop.org Trash specification](https://specifications.freedesktop.org/trash-spec/trashspec-latest.html).
 
+If you use *rmwrs* on a file that has the same name in a destination
+waste folder, it will be renamed by adding a time string formatted
+suffix (i.e. "_%H%M%S-%y%m%d").
+
 ## Configuration file
 
 *rmwrs* will automatically create a configuration file (rmwrsrc) in

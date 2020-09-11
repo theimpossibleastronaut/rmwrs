@@ -24,6 +24,7 @@ fn main() -> Result<(), io::Error> {
 
     let date_now = chrono::Local::now();
     let deletion_date = date_now.format("%Y-%m-%dT%H:%M:%S").to_string();
+    let noclobber_suffix = date_now.format("_%H%M%S-%y%m%d").to_string();
 
     let mut renamed_list: Vec<String> = Vec::new();
 
@@ -33,16 +34,19 @@ fn main() -> Result<(), io::Error> {
     let waste = &waste_list[0];
 
     for file in &opt.files {
-        let basename = rmwrs::libgen::get_basename(&file).to_str().unwrap();
-
         let file_absolute = file.canonicalize().unwrap().display().to_string();
-
-        // Will need more error-checking to prevent overwriting existing destination files.
-        // As in the C version of rmw, some type of time/date string is appended in that case.
-        let destination = format!("{}/{}", &waste.file, basename);
+        let mut basename = rmwrs::libgen::get_basename(&file)
+            .to_str()
+            .unwrap()
+            .to_owned();
+        let mut destination = format!("{}/{}", &waste.file, basename).to_owned();
+        if std::path::Path::new(&destination).exists() {
+            basename.push_str(&noclobber_suffix);
+            destination.push_str(&noclobber_suffix);
+        }
         println!("'{}' -> '{}'", file.display(), destination);
         if rename(file, &destination).is_ok() {
-            renamed_list.push(file_absolute.clone());
+            renamed_list.push(destination.clone());
             let trashinfo_file_contents =
                 trashinfo::Trashinfo::new(&file_absolute, &deletion_date).to_contents();
 
