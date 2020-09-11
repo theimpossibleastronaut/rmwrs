@@ -18,14 +18,21 @@ pub fn get_homedir() -> io::Result<String> {
 }
 
 pub fn get_datadir(homedir: &str) -> String {
-    let data_home: String = match env::var("XDG_DATA_HOME") {
-        Ok(val) => val,
-        Err(_e) => format!("{}{}", homedir, "/.local/share").to_string(),
-    };
+    let default = homedir.to_string() + "/.local/share";
+    let data_home: String;
+    if env::var("RMWRS_TEST_HOME").is_err() {
+        // Don't use $XDG_DATA_HOME if rmwrs is in test mode
+        data_home = default;
+    } else {
+        data_home = match env::var("XDG_DATA_HOME") {
+            Ok(val) => val,
+            Err(_e) => default,
+        };
+    }
     let datadir = data_home + "/rmwrs";
     if !std::path::Path::new(&datadir).exists() {
         println!("Creating {}", &datadir);
-        std::fs::create_dir_all(&datadir).expect("Unable to create config directory");
+        std::fs::create_dir_all(&datadir).expect("Unable to create data directory");
     }
     datadir
 }
@@ -127,20 +134,26 @@ pub mod config {
     use std::path::Path;
 
     pub fn get_filename(homedir: &str, opt_cfg: Option<String>) -> String {
-        let config_home;
+        let default = homedir.to_string() + "/.config";
+        let config_home: String;
         if opt_cfg.is_none() {
-            config_home = match env::var("XDG_CONFIG_HOME") {
-                Ok(val) => val,
-                Err(_e) => format!("{}{}", homedir, "/.config").to_string(),
-            };
-            if !Path::new(&config_home).exists() {
-                println!("Creating {}", &config_home);
-                fs::create_dir_all(&config_home).expect("Unable to create config directory");
+            if env::var("RMWRS_TEST_HOME").is_err() {
+                // Don't use $XDG_CONFIG_HOME if rmwrs is in test mode
+                config_home = default
+            } else {
+                config_home = match env::var("XDG_CONFIG_HOME") {
+                    Ok(val) => val,
+                    Err(_e) => default,
+                };
             }
-            return config_home + "/rmwrsrc";
         } else {
             return opt_cfg.unwrap();
         }
+        if !Path::new(&config_home).exists() {
+            println!("Creating {}", &config_home);
+            fs::create_dir_all(&config_home).expect("Unable to create config directory");
+        }
+        return config_home + "/rmwrsrc";
     }
 
     fn get_dev_num(wp: &str) -> io::Result<u64> {
