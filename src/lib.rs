@@ -204,7 +204,7 @@ pub mod config {
         }
     }
 
-    pub fn parse(
+    pub fn load(
         homedir: &str,
         config_file: &str,
     ) -> io::Result<(
