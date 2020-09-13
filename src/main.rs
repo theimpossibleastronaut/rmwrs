@@ -40,24 +40,24 @@ fn main() -> Result<(), io::Error> {
             .to_str()
             .unwrap()
             .to_owned();
+
         let mut destination = format!("{}/{}", &waste.file, basename).to_owned();
         if std::path::Path::new(&destination).exists() {
             basename.push_str(&noclobber_suffix);
             destination.push_str(&noclobber_suffix);
         }
-        println!("'{}' -> '{}'", file.display(), destination);
-        if rename(file, &destination).is_ok() {
-            renamed_list.push(destination.clone());
-            let trashinfo_file_contents =
-                trashinfo::Trashinfo::new(&file_absolute, &deletion_date).to_contents();
 
-            trashinfo::create(&basename, &waste.info, trashinfo_file_contents)
-                .expect("Error writing trashinfo file");
-        } else {
-            // We don't want to exit the program, just try the next file. In the future
-            // we might consider implementing an error counter (e.g. if err > 3
-            // then print fatal message && exit).
-            println!("Unable to rename {}", file.display());
+        match rename(&file, &destination) {
+            Ok(_val) => {
+                println!("'{}' -> '{}'", file.display(), destination);
+                renamed_list.push(destination.clone());
+                let trashinfo_file_contents =
+                    trashinfo::Trashinfo::new(&file_absolute, &deletion_date).to_contents();
+
+                trashinfo::create(&basename, &waste.info, trashinfo_file_contents)
+                    .expect("Error writing trashinfo file");
+            }
+            Err(e) => println!("Error {} renaming {}", e, file.display()),
         }
     }
 
