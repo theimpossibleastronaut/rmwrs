@@ -3,6 +3,7 @@ use std::io;
 use structopt::StructOpt;
 mod trashinfo;
 use rmwrs::cli_options;
+mod config;
 
 fn main() -> Result<(), io::Error> {
     let homedir = rmwrs::get_homedir()?;
@@ -18,9 +19,9 @@ fn main() -> Result<(), io::Error> {
         cli_options::show_version();
     }
 
-    let config_file = rmwrs::config::get_filename(&homedir, opt.custom_config_file);
+    let config_file = config::get_filename(&homedir, opt.custom_config_file);
 
-    let (waste_list, _config_vec) = rmwrs::config::load(&homedir, &config_file)?;
+    let (waste_list, _config_vec) = config::load(&homedir, &config_file)?;
 
     let date_now = chrono::Local::now();
     let deletion_date = date_now.format("%Y-%m-%dT%H:%M:%S").to_string();
