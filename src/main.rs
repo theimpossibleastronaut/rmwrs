@@ -35,7 +35,17 @@ fn main() -> Result<(), io::Error> {
     let waste = &waste_list[0];
 
     for file in &opt.files {
-        let file_absolute = file.canonicalize().unwrap().display().to_string();
+        let file_absolute: Option<String> = file.canonicalize().map_or_else(
+            |e| {
+                println!("{}", e);
+                None
+            },
+            |v| Some(v.display().to_string()),
+        );
+        if file_absolute == None {
+            continue;
+        }
+
         let mut basename = rmwrs::libgen::get_basename(&file)
             .to_str()
             .unwrap()
@@ -52,7 +62,8 @@ fn main() -> Result<(), io::Error> {
                 println!("'{}' -> '{}'", file.display(), destination);
                 renamed_list.push(destination.clone());
                 let trashinfo_file_contents =
-                    trashinfo::Trashinfo::new(&file_absolute, &deletion_date).to_contents();
+                    trashinfo::Trashinfo::new(&file_absolute.unwrap(), &deletion_date)
+                        .to_contents();
 
                 trashinfo::create(&basename, &waste.info, trashinfo_file_contents)
                     .expect("Error writing trashinfo file");
