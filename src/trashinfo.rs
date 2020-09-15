@@ -1,3 +1,4 @@
+use pct_str::{PctString, URIReserved};
 use std::fs;
 use std::io;
 
@@ -13,9 +14,9 @@ impl Trashinfo {
             2: deletion_date.to_string(),
         }
     }
-    // TODO URI encoding https://github.com/theimpossibleastronaut/rmwrs/issues/9
     pub fn to_contents(&self) -> String {
-        format!("{}\nPath={}\nDeletionDate={}\n", self.0, self.1, self.2)
+        let pct_string = PctString::encode(self.1.chars(), URIReserved);
+        format!("{}\nPath={}\nDeletionDate={}\n", self.0, pct_string, self.2)
     }
 }
 
@@ -25,7 +26,7 @@ fn check_create_trashinfo_contents() {
     let file: &str = "/home/foo/bar";
     assert_eq!(
         Trashinfo::new(&file, &deletion_date).to_contents(),
-        "[Trash Info]\nPath=/home/foo/bar\nDeletionDate=2020-07-23T20:56:03\n"
+        "[Trash Info]\nPath=%2Fhome%2Ffoo%2Fbar\nDeletionDate=2020-07-23T20:56:03\n"
     );
 }
 
