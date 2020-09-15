@@ -13,6 +13,7 @@ impl Trashinfo {
             2: deletion_date.to_string(),
         }
     }
+    // TODO URI encoding https://github.com/theimpossibleastronaut/rmwrs/issues/9
     pub fn to_contents(&self) -> String {
         format!("{}\nPath={}\nDeletionDate={}\n", self.0, self.1, self.2)
     }
