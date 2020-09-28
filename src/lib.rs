@@ -1,5 +1,6 @@
 use std::env;
 use std::io::{self, ErrorKind};
+pub mod utils;
 
 pub fn get_homedir() -> io::Result<String> {
     let homedir: String = match env::var("RMWRS_TEST_HOME") {

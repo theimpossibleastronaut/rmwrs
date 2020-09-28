@@ -18,9 +18,14 @@ pub fn percent_encode_char(to_encode: char) -> String {
 }
 
 pub fn is_unreserved(check_reserved: char) -> bool {
-    match check_reserved {
-        'A'..='Z' | 'a'..='z' | '0'..='9' => true,
-        '-'| '_' | '~' | '.' | '/' => true,
-        _ => false
+    if check_reserved.is_ascii() {
+        match check_reserved {
+            'A'..='Z' | 'a'..='z' | '0'..='9' => true,
+            '-'| '_' | '~' | '.' | '/' => true,
+            _ => false
+        }
+    }
+    else {
+        true
     }
 }
