@@ -1,6 +1,6 @@
-use pct_str::{PctString, URIReserved};
 use std::fs;
 use std::io;
+use rmwrs::utils::{escape_url, unescape_url};
 
 pub struct Trashinfo(String, String, String);
 
@@ -15,7 +15,7 @@ impl Trashinfo {
         }
     }
     pub fn to_contents(&self) -> String {
-        let pct_string = PctString::encode(self.1.chars(), URIReserved);
+        let pct_string = escape_url(&self.1);
         format!("{}\nPath={}\nDeletionDate={}\n", self.0, pct_string, self.2)
     }
 }
@@ -26,7 +26,7 @@ fn check_create_trashinfo_contents() {
     let file: &str = "/home/foo/bar";
     assert_eq!(
         Trashinfo::new(&file, &deletion_date).to_contents(),
-        "[Trash Info]\nPath=%2Fhome%2Ffoo%2Fbar\nDeletionDate=2020-07-23T20:56:03\n"
+        "[Trash Info]\nPath=/home/foo/bar\nDeletionDate=2020-07-23T20:56:03\n"
     );
 }
 
