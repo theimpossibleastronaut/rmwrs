@@ -1,6 +1,6 @@
 use std::fs;
 use std::io;
-use rmwrs::utils::{escape_url, unescape_url};
+use rmwrs::utils::{percent_encode, percent_decode};
 
 pub struct Trashinfo(String, String, String);
 
@@ -15,7 +15,7 @@ impl Trashinfo {
         }
     }
     pub fn to_contents(&self) -> String {
-        let pct_string = escape_url(&self.1);
+        let pct_string = percent_encode(&self.1);
         format!("{}\nPath={}\nDeletionDate={}\n", self.0, pct_string, self.2)
     }
 }
