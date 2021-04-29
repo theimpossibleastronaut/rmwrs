@@ -5,7 +5,7 @@ pub mod utils;
 pub fn get_homedir() -> io::Result<String> {
     let homedir: String = match env::var("RMWRS_TEST_HOME") {
         Ok(val) => val,
-        Err(_e) => match dirs::home_dir() {
+        Err(_e) => match home::home_dir() {
             None => {
                 return Err(io::Error::new(
                     ErrorKind::NotFound,
