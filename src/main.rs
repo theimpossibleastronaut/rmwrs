@@ -51,24 +51,40 @@ fn main() -> Result<(), io::Error> {
             .unwrap()
             .to_owned();
 
-        let mut destination = format!("{}/{}", &waste.file, basename).to_owned();
-        if std::path::Path::new(&destination).exists() {
-            basename.push_str(&noclobber_suffix);
-            destination.push_str(&noclobber_suffix);
-        }
+        if opt.restore {
+            let info_path = trashinfo::info_path(&file_absolute.unwrap());
+            let trash_info = trashinfo::Trashinfo::from_file(&info_path)?;
+            let destination = trash_info.1.clone();
 
-        match rename(&file, &destination) {
-            Ok(_val) => {
-                println!("'{}' -> '{}'", file.display(), destination);
-                renamed_list.push(destination.clone());
-                let trashinfo_file_contents =
-                    trashinfo::Trashinfo::new(&file_absolute.unwrap(), &deletion_date)
-                        .to_contents();
-
-                trashinfo::create(&basename, &waste.info, trashinfo_file_contents)
-                    .expect("Error writing trashinfo file");
+            match rename(file, &trash_info.1) {
+                Ok(_val) => {
+                    println!("'{}' -> '{}'", file.display(), destination);
+                    renamed_list.push(destination.clone());
+                    std::fs::remove_file(info_path)?;
+                }
+                Err(e) => println!("Error {} renaming {}", e, file.display()),
             }
-            Err(e) => println!("Error {} renaming {}", e, file.display()),
+        }
+        else {
+            let mut destination = format!("{}/{}", &waste.file, basename).to_owned();
+            if std::path::Path::new(&destination).exists() {
+                basename.push_str(&noclobber_suffix);
+                destination.push_str(&noclobber_suffix);
+            }
+    
+            match rename(&file, &destination) {
+                Ok(_val) => {
+                    println!("'{}' -> '{}'", file.display(), destination);
+                    renamed_list.push(destination.clone());
+                    let trashinfo_file_contents =
+                        trashinfo::Trashinfo::new(&file_absolute.unwrap(), &deletion_date)
+                            .to_contents();
+    
+                    trashinfo::create(&basename, &waste.info, trashinfo_file_contents)
+                        .expect("Error writing trashinfo file");
+                }
+                Err(e) => println!("Error {} renaming {}", e, file.display()),
+            }
         }
     }
 
