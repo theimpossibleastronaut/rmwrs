@@ -31,6 +31,23 @@ test -e ${TEST_WASTE_FOLDER}/info/foo.trashinfo || exit $?
 test -e ${TEST_WASTE_FOLDER}/files/bar || exit $?
 test -e ${TEST_WASTE_FOLDER}/info/bar.trashinfo || exit $?
 
+#
+# Test restore
+#
+# Make sure foo doesn't exist before restoring
+test ! -e foo || exit $?
+
+# https://doc.rust-lang.org/cargo/reference/environment-variables.html
+# CARGO_BUILD_TARGET_DIR was an empty variable when I tried this
+# ${CARGO_BUILD_TARGET_DIR}/${CARGO_PKG_NAME} -c tests/bin_test.conf -v -z ${TEST_WASTE_FOLDER}/files/foo || exit $?
+#
+# It would be best if we didn't need to use the literal string "/target/debug/"
+# in the command below.
+${CARGO_MANIFEST_DIR}/target/debug/${CARGO_PKG_NAME} -c tests/bin_test.conf -v -z ${TEST_WASTE_FOLDER}/files/foo || exit $?
+test -e foo || exit $?
+test ! -e ${TEST_WASTE_FOLDER}/files/foo || exit $?
+test ! -e ${TEST_WASTE_FOLDER}/info/foo.trashinfo || exit $?
+
 if test -r ${RMWRS_TEST_HOME}; then
   rm -rf ${RMWRS_TEST_HOME}
 fi
