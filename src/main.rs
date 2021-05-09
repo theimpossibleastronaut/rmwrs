@@ -27,13 +27,12 @@ fn main() -> Result<(), io::Error> {
     let deletion_date = date_now.format("%Y-%m-%dT%H:%M:%S").to_string();
     let noclobber_suffix = date_now.format("_%H%M%S-%y%m%d").to_string();
 
-    let mut renamed_list: Vec<String> = Vec::new();
-
+    
     // This will be changed later; the subscript number for waste_list depends on whether or not
     // the file being rmw'ed is
     // on the same filesystem as the WASTE folder.
     let waste = &waste_list[0];
-
+    
     for file in &opt.files {
         let file_absolute: Option<String> = file.canonicalize().map_or_else(
             |e| {
@@ -45,28 +44,29 @@ fn main() -> Result<(), io::Error> {
         if file_absolute == None {
             continue;
         }
-
+        
         let mut basename = rmwrs::libgen::get_basename(&file)
             .to_str()
             .unwrap()
             .to_owned();
-
+        
         if opt.restore {
             let info_path = trashinfo::info_path(&file_absolute.unwrap());
             let trash_info = trashinfo::Trashinfo::from_file(&info_path)?;
             let destination = trash_info.1.clone();
-
+            
             match rename(file, &trash_info.1) {
                 Ok(_val) => {
                     println!("'{}' -> '{}'", file.display(), destination);
-                    renamed_list.push(destination.clone());
                     std::fs::remove_file(info_path)?;
                 }
                 Err(e) => println!("Error {} renaming {}", e, file.display()),
             }
         }
         else {
+            let mut renamed_list: Vec<String> = Vec::new();
             let mut destination = format!("{}/{}", &waste.file, basename).to_owned();
+
             if std::path::Path::new(&destination).exists() {
                 basename.push_str(&noclobber_suffix);
                 destination.push_str(&noclobber_suffix);
@@ -85,13 +85,13 @@ fn main() -> Result<(), io::Error> {
                 }
                 Err(e) => println!("Error {} renaming {}", e, file.display()),
             }
+            // I don't think we need a unit test for mrl file creation; when there's a restore
+            // and undo function,
+            // it can be tested easily using the bin script test.
+            rmwrs::mrl::create(&datadir, &renamed_list)?;
         }
     }
 
-    // I don't think we need a unit test for mrl file creation; when there's a restore
-    // and undo function,
-    // it can be tested easily using the bin script test.
-    rmwrs::mrl::create(&datadir, &renamed_list)?;
 
     Ok(())
 }

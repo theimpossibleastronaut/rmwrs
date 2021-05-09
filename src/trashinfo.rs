@@ -22,7 +22,7 @@ impl Trashinfo {
 
     pub fn from_file(path: &str) -> io::Result<Trashinfo> {
         let info = configster::parse_file(path, '\n')?;
-        Ok(Trashinfo::new(&info[1].value.primary, &info[2].value.primary))
+        Ok(Trashinfo::new(&percent_decode(&info[1].value.primary).unwrap(), &info[2].value.primary))
     }
 }
 
@@ -45,4 +45,9 @@ pub fn create(basename: &str, waste_info: &str, contents: String) -> io::Result<
 pub fn info_path(file_to_restore_path: &str) -> String {
     // This is a bit lazy and doesn't bother reading the waste_info.
     format!("{}.trashinfo", file_to_restore_path).replace("/files/", "/info/")
+}
+
+#[test]
+fn test_info_path() {
+    assert_eq!("~/.hello&there/info/🐢👀🍻.trashinfo", info_path("~/.hello&there/files/🐢👀🍻"))
 }
