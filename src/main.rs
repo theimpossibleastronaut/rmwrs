@@ -1,5 +1,4 @@
-use std::fs::rename;
-use std::io;
+use std::{fs::rename, io, path::Path};
 use structopt::StructOpt;
 mod trashinfo;
 use rmwrs::cli_options;
@@ -53,9 +52,14 @@ fn main() -> Result<(), io::Error> {
         if opt.restore {
             let info_path = trashinfo::info_path(&file_absolute.unwrap());
             let trash_info = trashinfo::Trashinfo::from_file(&info_path)?;
-            let destination = trash_info.1.clone();
+            let mut destination = trash_info.1.clone();
+            let dest_path = Path::new(&destination);
+            if dest_path.exists() {
+                let noclobber_suffix = &chrono::NaiveDateTime::parse_from_str(&trash_info.2, "%Y-%m-%dT%H:%M:%S").expect("Could not parse datetime from trashinfo.").format("_%H%M%S-%y%m%d").to_string();
+                destination += noclobber_suffix;
+            }
             
-            match rename(file, &trash_info.1) {
+            match rename(file, &destination) {
                 Ok(_val) => {
                     println!("'{}' -> '{}'", file.display(), destination);
                     std::fs::remove_file(info_path)?;

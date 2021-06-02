@@ -1,8 +1,8 @@
 use std::fs;
 use std::io;
-use rmwrs::utils::{percent_encode, percent_decode};
+use rmwrs::utils::{percent_encode, percent_decode, read_lines};
 
-pub struct Trashinfo(String, pub String, String);
+pub struct Trashinfo(String, pub String, pub String);
 
 /// The format of the trashinfo file corresponds to that of the FreeDesktop.org
 /// Trash specification<https://specifications.freedesktop.org/trash-spec/trashspec-latest.html>.
@@ -21,8 +21,13 @@ impl Trashinfo {
     }
 
     pub fn from_file(path: &str) -> io::Result<Trashinfo> {
-        let info = configster::parse_file(path, '\n')?;
-        Ok(Trashinfo::new(&percent_decode(&info[1].value.primary).unwrap(), &info[2].value.primary))
+        let mut lines = read_lines(path)?.skip(1);
+        let mut path_and_filename = lines.next().expect("Failed to read the path in trashinfo.")?;
+        path_and_filename.replace_range(..5, "");
+        path_and_filename = percent_decode(&path_and_filename).expect("Could not decode path in trashinfo.");
+        let mut deletion_date = lines.next().expect("Failed to read deletion date in trashinfo.")?;
+        deletion_date.replace_range(..13, "");
+        Ok(Trashinfo::new(&path_and_filename, &deletion_date))
     }
 }
 
