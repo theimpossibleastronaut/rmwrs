@@ -17,11 +17,11 @@ OLD_PWD="${PWD}"
 test_result_want_fail() {
   set +x
   if [ $1 = 0 ]; then
-    echo "\n  --:Test failure:--"
+    echo -e "\n  --:Test failure:--"
     exit 1
   fi
 
-  echo "  -:Test passed:-"
+  echo -e "  -:Test passed:-"
   set -x
 }
 
@@ -64,7 +64,7 @@ $TEST_CMD -c "${CFG_FILE}" -v -z ${TEST_WASTE_FOLDER}/files/bar || exit $?
 
 $TEST_CMD -c "${CFG_FILE}" foo bar || exit $?
 set +x
-echo "\n\nTest restore using absolute path"
+echo -e "\n\nTest restore using absolute path"
 set -x
 
 $TEST_CMD -c "${CFG_FILE}" -z "${TEST_WASTE_FOLDER}/files/"* || exit $?
@@ -74,8 +74,8 @@ test -e bar || exit $?
 $TEST_CMD -c "${CFG_FILE}" foo bar || exit $?
 
 set +x
-echo "\n\ntest restore using relative path"
-echo "pwd is ${PWD}\n\n"
+echo -e "\n\ntest restore using relative path"
+echo -e "pwd is ${PWD}\n\n"
 set -x
 
 $TEST_CMD -c "${CFG_FILE}" -z "${BASENAME_TEST_WASTE_FOLDER}/files/foo" || exit $?
@@ -100,10 +100,10 @@ test -e "any bar" || exit $?
 
 # When restoring, file should have time/date string (formatted as
 # "_%H%M%S-%y%m%d") appended to it (e.g. 'foo_164353-210508').
-#$TEST_CMD -c "${CFG_FILE}" foo || exit $?
-#touch foo
-#$TEST_CMD -c "${CFG_FILE}" -z "${BASENAME_TEST_WASTE_FOLDER}/files/foo" || exit $?
-#ls foo_* || exit $?
+$TEST_CMD -c "${CFG_FILE}" foo || exit $?
+touch foo
+$TEST_CMD -c "${CFG_FILE}" -z "${BASENAME_TEST_WASTE_FOLDER}/files/foo" || exit $?
+ls foo_* || exit $?
 
 if test -r ${RMWRS_TEST_HOME}; then
   rm -rf ${RMWRS_TEST_HOME}

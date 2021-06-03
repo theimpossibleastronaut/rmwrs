@@ -53,10 +53,8 @@ fn main() -> Result<(), io::Error> {
             let info_path = trashinfo::info_path(&file_absolute.unwrap());
             let trash_info = trashinfo::Trashinfo::from_file(&info_path)?;
             let mut destination = trash_info.1.clone();
-            let dest_path = Path::new(&destination);
-            if dest_path.exists() {
-                let noclobber_suffix = &chrono::NaiveDateTime::parse_from_str(&trash_info.2, "%Y-%m-%dT%H:%M:%S").expect("Could not parse datetime from trashinfo.").format("_%H%M%S-%y%m%d").to_string();
-                destination += noclobber_suffix;
+            if Path::new(&destination).exists() {
+                destination.push_str(&noclobber_suffix);
             }
             
             match rename(file, &destination) {
@@ -71,7 +69,7 @@ fn main() -> Result<(), io::Error> {
             let mut renamed_list: Vec<String> = Vec::new();
             let mut destination = format!("{}/{}", &waste.file, basename).to_owned();
 
-            if std::path::Path::new(&destination).exists() {
+            if Path::new(&destination).exists() {
                 basename.push_str(&noclobber_suffix);
                 destination.push_str(&noclobber_suffix);
             }
