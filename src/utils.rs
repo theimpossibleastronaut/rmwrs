@@ -1,7 +1,4 @@
-use std::fmt;
-use std::fs::File;
-use std::io::{self, BufRead};
-use std::path::Path;
+use std::{io::{self, BufRead}, fmt, path::Path, fs::File};
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct PercentDecodeError(&'static str);
@@ -62,7 +59,7 @@ pub fn is_unreserved(check_reserved: char) -> bool {
 }
 
 /// See the original [source here](https://doc.rust-lang.org/rust-by-example/std_misc/file/read_lines.html).
-/// 
+///
 /// The output is wrapped in a Result to allow matching on errors
 /// Returns an Iterator to the Reader of the lines of the file.
 pub fn read_lines<P>(filename: P) -> io::Result<io::Lines<io::BufReader<File>>>
