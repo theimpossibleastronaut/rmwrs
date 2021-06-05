@@ -55,6 +55,10 @@ pub mod cli_options {
         #[structopt(short = "c", long = "config")]
         pub custom_config_file: Option<String>,
 
+        /// Restore files
+        #[structopt(short = "z", long = "restore")]
+        pub restore: bool,
+
         /// Files to process
         #[structopt(name = "FILE", parse(from_os_str))]
         pub files: Vec<PathBuf>,
