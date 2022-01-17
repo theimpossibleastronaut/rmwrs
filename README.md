@@ -1,7 +1,6 @@
 # rmwrs
 
-[![Build
-Status](https://travis-ci.com/theimpossibleastronaut/rmwrs.svg?branch=trunk)](https://travis-ci.com/theimpossibleastronaut/rmwrs)
+[![Rust](https://github.com/theimpossibleastronaut/rmwrs/actions/workflows/rust.yml/badge.svg)](https://github.com/theimpossibleastronaut/rmwrs/actions/workflows/rust.yml)
 
 **Not ready for use**
 
