@@ -1,8 +1,0 @@
-language: rust
-os: linux
-dist: bionic
-script:
-  - cargo check --verbose
-  - cargo test
-  - touch foo bar
-  - cargo run -- foo bar
