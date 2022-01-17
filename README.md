@@ -9,8 +9,6 @@
 ## Current state
 
 *rmwrs* is in a very early development state and may change rapidly.
-Presently files can be removed to a WASTE directory but there's no
-`restore` feature.
 
 Running `cargo run -- <file>` will ReMove a file to a waste folder
 (which is specified in the test configuration file) and create a
@@ -33,9 +31,20 @@ and corresponding .trashinfo files were created in
 ~/.rmwrs-Trash-test/info. The .trashinfo file uses the
 [FreeDesktop.org Trash specification](https://specifications.freedesktop.org/trash-spec/trashspec-latest.html).
 
-If you use *rmwrs* on a file that has the same name in a destination
-waste folder, it will be renamed by adding a time string formatted
-suffix (i.e. "_%H%M%S-%y%m%d").
+When rmw'ing an item, if a file or directory with the same name already
+exists in the waste (or trash) directory, it will not be overwritten;
+instead, the current file being rmw'ed will have a time/date string
+(formatted as "_%H%M%S-%y%m%d") appended to it (e.g.
+'foo_164353-210508').
+
+## -z, --restore FILE(s)
+To restore items, specify the path to them in the <WASTE>/files
+directory (wildcards ok).
+
+When restoring an item, if a file or directory with the same name
+already exists at the destination, the item being restored will
+have a time/date string (formatted as "_%H%M%S-%y%m%d") appended
+to it (e.g. 'foo_164353-210508').
 
 ## Configuration file
 
